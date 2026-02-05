@@ -397,16 +397,16 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 ### 15. Python Sidecar Docker & Deployment
 
-- [ ] **15.1** Schrijf `sidecar/Dockerfile` (zie TDD sectie 9.3): Python 3.12-slim, install requirements, expose 8000, uvicorn CMD
-- [ ] **15.2** Maak `sidecar/.env.example` met alle vereiste env vars
-- [ ] **15.3** Test Docker build: `docker build -t mc-sidecar ./sidecar`
+- [x] **15.1** Schrijf `sidecar/Dockerfile` (zie TDD sectie 9.3): Python 3.12-slim, install requirements, expose 8000, uvicorn CMD
+- [x] **15.2** Maak `sidecar/.env.example` met alle vereiste env vars
+- [ ] **15.3** Test Docker build: `docker build -t mc-sidecar ./sidecar` (vereist Docker installatie)
 - [ ] **15.4** Test Docker run: `docker run -p 8000:8000 --env-file .env mc-sidecar` → healthcheck werkt
 - [ ] **15.5** Deploy naar gekozen platform (Fly.io / Railway / Cloud Run) — configureer env vars daar
 - [ ] **15.6** Update Supabase Edge Functions met de productie sidecar URL als secret
 
 #### Tests taak 15
 
-- [ ] **T15.1** `docker build` slaagt zonder errors
-- [ ] **T15.2** Container draait en `/health` retourneert `{"status": "ok"}`
+- [ ] **T15.1** `docker build` slaagt zonder errors (vereist Docker)
+- [ ] **T15.2** Container draait en `/health` retourneert `{"status": "ok"}` (vereist Docker)
 - [ ] **T15.3** Productie sidecar is bereikbaar: `curl https://<sidecar-url>/health` retourneert 200
 - [ ] **T15.4** End-to-end: trigger analyse via de live site → sidecar verwerkt de vragen → resultaten verschijnen in het dashboard
