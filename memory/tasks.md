@@ -196,17 +196,17 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 ### 8. Upload & Parsing (Frontend + Sidecar)
 
-- [ ] **8.1** Maak `src/components/FileUploader.tsx`: drag-and-drop component die bestanden accepteert (.csv, .xlsx, .docx), een preview toont van de filename en grootte, en een `onFileSelected(file: File)` callback aanroept
-- [ ] **8.2** Implementeer `src/routes/ExamUpload.tsx`:
+- [x] **8.1** Maak `src/components/FileUploader.tsx`: drag-and-drop component die bestanden accepteert (.csv, .xlsx, .docx), een preview toont van de filename en grootte, en een `onFileSelected(file: File)` callback aanroept
+- [x] **8.2** Implementeer `src/routes/ExamUpload.tsx`:
   - **8.2a** Formulier met velden: toets titel, vaknaam, leerdoelen (comma-separated text input)
   - **8.2b** FileUploader component voor het bestand
   - **8.2c** Submit handler: maak een nieuw exam record in Supabase, upload het bestand naar Supabase Storage bucket `uploads`, navigeer naar `/exams/:examId/parse`
-- [ ] **8.3** Maak `sidecar/parsers/` directory met `csv_parser.py`, `xlsx_parser.py`, `docx_parser.py`
-- [ ] **8.4** Implementeer `csv_parser.py`: lees CSV met kolommen `stam, optie_a, optie_b, optie_c, optie_d, correct`. Retourneer een lijst van `Question` objecten. Ondersteun zowel `;` als `,` als delimiter. Valideer dat `correct` verwijst naar een bestaande optie
-- [ ] **8.5** Implementeer `xlsx_parser.py`: lees Excel met dezelfde kolomstructuur via `openpyxl`. Retourneer dezelfde output als csv_parser
-- [ ] **8.6** Implementeer `docx_parser.py`: parse genummerde vragen uit DOCX. Herken patronen als "1. [stam]\nA. [optie]\nB. [optie]\n..." en het correcte antwoord aangeduid met asterisk (*) of vet. Retourneer dezelfde output
-- [ ] **8.7** Voeg POST `/parse` route toe aan sidecar: accepteert een bestand (multipart upload), detecteert type op basis van extensie, roept juiste parser aan, retourneert JSON array van parsed vragen
-- [ ] **8.8** Implementeer `src/routes/ExamParsing.tsx`:
+- [x] **8.3** Maak `sidecar/parsers/` directory met `csv_parser.py`, `xlsx_parser.py`, `docx_parser.py`
+- [x] **8.4** Implementeer `csv_parser.py`: lees CSV met kolommen `stam, optie_a, optie_b, optie_c, optie_d, correct`. Retourneer een lijst van `Question` objecten. Ondersteun zowel `;` als `,` als delimiter. Valideer dat `correct` verwijst naar een bestaande optie
+- [x] **8.5** Implementeer `xlsx_parser.py`: lees Excel met dezelfde kolomstructuur via `openpyxl`. Retourneer dezelfde output als csv_parser
+- [x] **8.6** Implementeer `docx_parser.py`: parse genummerde vragen uit DOCX. Herken patronen als "1. [stam]\nA. [optie]\nB. [optie]\n..." en het correcte antwoord aangeduid met asterisk (*) of vet. Retourneer dezelfde output
+- [x] **8.7** Voeg POST `/parse` route toe aan sidecar: accepteert een bestand (multipart upload), detecteert type op basis van extensie, roept juiste parser aan, retourneert JSON array van parsed vragen
+- [x] **8.8** Implementeer `src/routes/ExamParsing.tsx`:
   - **8.8a** Haal parsed vragen op (call naar sidecar `/parse` of direct client-side parsing voor CSV)
   - **8.8b** Toon een tabel met alle vragen: rijnummer, stam (truncated), aantal opties, correct antwoord
   - **8.8c** Klikbaar per rij: open inline editor om stam, opties, correct antwoord aan te passen
@@ -214,13 +214,13 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 #### Tests taak 8
 
-- [ ] **T8.1** Pytest `csv_parser`: parse een test CSV bestand met 5 vragen, verifieer dat alle 5 correct geparsed worden met juiste stam, opties, en correct_option index
-- [ ] **T8.2** Pytest `csv_parser`: CSV met ontbrekende kolom → raise duidelijke error
-- [ ] **T8.3** Pytest `xlsx_parser`: parse een test Excel bestand met 3 vragen → correcte output
-- [ ] **T8.4** Pytest `docx_parser`: parse een test DOCX met genummerde vragen en vetgedrukt correct antwoord → correcte output
-- [ ] **T8.5** React test `FileUploader`: render component, simuleer een file drop, verifieer dat `onFileSelected` callback aangeroepen wordt met het juiste File object
-- [ ] **T8.6** React test `ExamUpload`: render component, vul formulier in, verifieer dat submit handler Supabase `insert` en `storage.upload` aanroept (mock Supabase client)
-- [ ] **T8.7** Sidecar integratietest: POST een CSV bestand naar `/parse` endpoint, verifieer dat response een JSON array is met correcte question objecten
+- [x] **T8.1** Pytest `csv_parser`: parse een test CSV bestand met 5 vragen, verifieer dat alle 5 correct geparsed worden met juiste stam, opties, en correct_option index
+- [x] **T8.2** Pytest `csv_parser`: CSV met ontbrekende kolom → raise duidelijke error
+- [x] **T8.3** Pytest `xlsx_parser`: parse een test Excel bestand met 3 vragen → correcte output
+- [x] **T8.4** Pytest `docx_parser`: parse een test DOCX met genummerde vragen en vetgedrukt correct antwoord → correcte output
+- [x] **T8.5** React test `FileUploader`: render component, simuleer een file drop, verifieer dat `onFileSelected` callback aangeroepen wordt met het juiste File object
+- [x] **T8.6** React test `ExamUpload`: render component, vul formulier in, verifieer dat submit handler Supabase `insert` en `storage.upload` aanroept (mock Supabase client)
+- [x] **T8.7** Sidecar integratietest: POST een CSV bestand naar `/parse` endpoint, verifieer dat response een JSON array is met correcte question objecten
 
 ---
 
