@@ -123,10 +123,12 @@ interface Assessment {
   bet_score: number | null;
   tech_kwal_score: number | null;
   val_score: number | null;
+  val_cognitief_niveau: string | null;
   tech_kwant_flags: string[];
   bet_toelichting: string | null;
   tech_toelichting: string | null;
   val_toelichting: string | null;
+  improvement_suggestions: { dimensie: string; suggestie: string }[];
 }
 
 function escapeCsv(value: string): string {
@@ -143,26 +145,31 @@ function generateCsv(
   const headers = [
     "Nr",
     "Stam",
-    "Aantal opties",
     "Correct antwoord",
+    "Bloom niveau",
     "Betrouwbaarheid (1-5)",
     "Technisch (1-5)",
     "Validiteit (1-5)",
     "Flags",
+    "Verbetervoorstellen",
   ];
 
   const rows = questions.map((q, i) => {
     const a = q.assessments?.[0];
     const correctOpt = q.options?.find((o) => o.is_correct);
+    const suggestions = (a?.improvement_suggestions ?? [])
+      .map((s) => `${s.dimensie}: ${s.suggestie}`)
+      .join("; ");
     return [
       String(i + 1),
       escapeCsv(q.stem ?? ""),
-      String(q.options?.length ?? 0),
       escapeCsv(correctOpt?.text ?? ""),
+      a?.val_cognitief_niveau ?? "",
       a?.bet_score != null ? String(a.bet_score) : "",
       a?.tech_kwal_score != null ? String(a.tech_kwal_score) : "",
       a?.val_score != null ? String(a.val_score) : "",
       escapeCsv((a?.tech_kwant_flags ?? []).join("; ")),
+      escapeCsv(suggestions),
     ].join(",");
   });
 
@@ -184,6 +191,22 @@ function generateMarkdown(
 ): Response {
   const lines: string[] = [`# ${exam.title ?? "Export"}`, ""];
 
+  // Overview table
+  lines.push("## Overzicht");
+  lines.push("");
+  lines.push("| # | Stam | B | T | V | Bloom |");
+  lines.push("|---|------|---|---|---|-------|");
+  for (let i = 0; i < questions.length; i++) {
+    const q = questions[i];
+    const a = q.assessments?.[0];
+    const stemShort = q.stem.length > 60 ? q.stem.slice(0, 60) + "..." : q.stem;
+    lines.push(
+      `| ${i + 1} | ${stemShort} | ${a?.bet_score ?? "-"} | ${a?.tech_kwal_score ?? "-"} | ${a?.val_score ?? "-"} | ${a?.val_cognitief_niveau ?? "-"} |`
+    );
+  }
+  lines.push("");
+
+  // Per-question detail sections
   for (let i = 0; i < questions.length; i++) {
     const q = questions[i];
     const a = q.assessments?.[0];
@@ -217,6 +240,13 @@ function generateMarkdown(
       if (a.tech_kwant_flags?.length) {
         lines.push("");
         lines.push(`**Flags:** ${a.tech_kwant_flags.join(", ")}`);
+      }
+      if (a.improvement_suggestions?.length) {
+        lines.push("");
+        lines.push("**Verbetervoorstellen:**");
+        for (const s of a.improvement_suggestions) {
+          lines.push(`- **${s.dimensie}:** ${s.suggestie}`);
+        }
       }
     }
     lines.push("");
