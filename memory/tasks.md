@@ -9,23 +9,23 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 ### 1. Project Scaffold & Tooling
 
-- [ ] **1.1** Initialiseer Vite project met React + TypeScript template (`npm create vite@latest . -- --template react-ts`)
-- [ ] **1.2** Installeer dependencies: `tailwindcss @tailwindcss/vite react-router @supabase/supabase-js`
-- [ ] **1.3** Configureer Tailwind CSS v4: voeg `@tailwindcss/vite` plugin toe aan `vite.config.ts` en voeg `@import "tailwindcss"` toe aan `src/index.css`
-- [ ] **1.4** Stel `base: '/mc-toetsgenerator/'` in in `vite.config.ts`
-- [ ] **1.5** Maak `.env.example` met `VITE_SUPABASE_URL` en `VITE_SUPABASE_ANON_KEY` placeholders
-- [ ] **1.6** Maak `.gitignore` met regels voor `node_modules/`, `dist/`, `.env`, `.DS_Store`
-- [ ] **1.7** Maak `public/404.html` met de SPA redirect-script (zie TDD sectie 9.1)
-- [ ] **1.8** Installeer test tooling: `vitest @testing-library/react @testing-library/jest-dom jsdom`
-- [ ] **1.9** Configureer Vitest in `vite.config.ts` (environment: jsdom, globals: true, setup file)
-- [ ] **1.10** Maak `src/test/setup.ts` met `import '@testing-library/jest-dom'`
+- [x] **1.1** Initialiseer Vite project met React + TypeScript template (`npm create vite@latest . -- --template react-ts`)
+- [x] **1.2** Installeer dependencies: `tailwindcss @tailwindcss/vite react-router @supabase/supabase-js`
+- [x] **1.3** Configureer Tailwind CSS v4: voeg `@tailwindcss/vite` plugin toe aan `vite.config.ts` en voeg `@import "tailwindcss"` toe aan `src/index.css`
+- [x] **1.4** Stel `base: '/mc-toetsgenerator/'` in in `vite.config.ts`
+- [x] **1.5** Maak `.env.example` met `VITE_SUPABASE_URL` en `VITE_SUPABASE_ANON_KEY` placeholders
+- [x] **1.6** Maak `.gitignore` met regels voor `node_modules/`, `dist/`, `.env`, `.DS_Store`
+- [x] **1.7** Maak `public/404.html` met de SPA redirect-script (zie TDD sectie 9.1)
+- [x] **1.8** Installeer test tooling: `vitest @testing-library/react @testing-library/jest-dom jsdom`
+- [x] **1.9** Configureer Vitest in `vite.config.ts` (environment: jsdom, globals: true, setup file)
+- [x] **1.10** Maak `src/test/setup.ts` met `import '@testing-library/jest-dom'`
 
 #### Tests taak 1
 
-- [ ] **T1.1** `npm run dev` start zonder errors en toont de standaard Vite welkomstpagina
-- [ ] **T1.2** `npm run build` produceert een `dist/` map met `index.html` die relatieve paden met `/mc-toetsgenerator/` prefix bevat
-- [ ] **T1.3** `npx vitest run` slaagt (minimaal 1 dummy test die passed: `expect(true).toBe(true)`)
-- [ ] **T1.4** Tailwind classes worden correct verwerkt: maak een component met `className="text-red-500"` en verifieer dat de CSS in de build output zit
+- [x] **T1.1** `npm run dev` start zonder errors en toont de standaard Vite welkomstpagina
+- [x] **T1.2** `npm run build` produceert een `dist/` map met `index.html` die relatieve paden met `/mc-toetsgenerator/` prefix bevat
+- [x] **T1.3** `npx vitest run` slaagt (minimaal 1 dummy test die passed: `expect(true).toBe(true)`)
+- [x] **T1.4** Tailwind classes worden correct verwerkt: maak een component met `className="text-red-500"` en verifieer dat de CSS in de build output zit
 
 ---
 
