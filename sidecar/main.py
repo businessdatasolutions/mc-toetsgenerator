@@ -8,6 +8,7 @@ from parsers.csv_parser import parse_csv
 from parsers.docx_parser import parse_docx
 from parsers.xlsx_parser import parse_xlsx
 from services.embedding_pipeline import run_embedding
+from services.generation_pipeline import run_generation
 from services.supabase_client import get_supabase_client
 from services.validation_pipeline import run_validation
 
@@ -20,6 +21,10 @@ class AnalyzeRequest(BaseModel):
 
 class EmbedRequest(BaseModel):
     material_id: str
+
+
+class GenerateRequest(BaseModel):
+    job_id: str
 
 
 @app.get("/health")
@@ -47,6 +52,15 @@ async def embed(request: EmbedRequest, background_tasks: BackgroundTasks):
         run_embedding(request.material_id),
     )
     return {"status": "processing", "material_id": request.material_id}
+
+
+@app.post("/generate")
+async def generate(request: GenerateRequest, background_tasks: BackgroundTasks):
+    background_tasks.add_task(
+        asyncio.run,
+        run_generation(request.job_id),
+    )
+    return {"status": "processing", "job_id": request.job_id}
 
 
 @app.post("/parse")

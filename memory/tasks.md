@@ -296,57 +296,57 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 ### 12. RAG Pipeline — Materiaal Verwerking
 
-- [ ] **12.1** Maak `sidecar/rag/extractor.py` met functies:
+- [x] **12.1** Maak `sidecar/rag/extractor.py` met functies:
   - **12.1a** `extract_pdf(file_bytes) -> list[PageText]`: gebruik `pdfplumber` om per pagina tekst te extraheren. `PageText` bevat `page_number: int` en `text: str`
   - **12.1b** `extract_docx(file_bytes) -> str`: gebruik `python-docx` om alle paragrafen te joinen
   - **12.1c** `extract_text(file_bytes, mime_type) -> str | list[PageText]`: dispatch naar juiste extractor op basis van mime type
-- [ ] **12.2** Maak `sidecar/rag/chunker.py` met `chunk_text(text, metadata) -> list[Chunk]`:
+- [x] **12.2** Maak `sidecar/rag/chunker.py` met `chunk_text(text, metadata) -> list[Chunk]`:
   - **12.2a** Splits tekst in chunks van ~500 tokens (schat met `len(text) / 4` als heuristiek) met 50 tokens overlap
   - **12.2b** Respecteer paragraafgrenzen: splits bij voorkeur op dubbele newlines
   - **12.2c** Elk chunk-object bevat: `text`, `page` (indien beschikbaar), `position` (index), `metadata`
-- [ ] **12.3** Maak `sidecar/rag/embedder.py` met `embed_chunks(chunks) -> list[list[float]]`:
+- [x] **12.3** Maak `sidecar/rag/embedder.py` met `embed_chunks(chunks) -> list[list[float]]`:
   - **12.3a** Gebruik OpenAI API (`text-embedding-3-small` model)
   - **12.3b** Batch chunks in groepen van 100 per API request
   - **12.3c** Retourneer lijst van 1536-dimensionale float vectors
-- [ ] **12.4** Maak `sidecar/services/embedding_pipeline.py` met `run_embedding(material_id)`:
+- [x] **12.4** Maak `sidecar/services/embedding_pipeline.py` met `run_embedding(material_id)`:
   - **12.4a** Download bestand uit Supabase Storage via service role client
   - **12.4b** Extraheer tekst (dispatch op mime type)
   - **12.4c** Chunk de tekst
   - **12.4d** Genereer embeddings
   - **12.4e** Schrijf chunks + embeddings naar `chunks` tabel in Supabase
   - **12.4f** Update `materials.content_text` en `materials.chunk_count`
-- [ ] **12.5** Voeg POST `/embed` route toe aan `sidecar/main.py`
+- [x] **12.5** Voeg POST `/embed` route toe aan `sidecar/main.py`
 
 #### Tests taak 12
 
 - [ ] **T12.1** Pytest `extract_pdf`: parse een test PDF bestand (maak een simpele test PDF met reportlab of gebruik een fixture), verifieer dat tekst per pagina correct geextraheerd wordt
-- [ ] **T12.2** Pytest `extract_docx`: parse een test DOCX, verifieer dat alle paragrafen in de output staan
-- [ ] **T12.3** Pytest `chunk_text`: input van 2000 woorden → verifieer dat er meerdere chunks zijn, elk ≤600 tokens (~2400 karakters), met overlap (laatste 50 tokens van chunk N = eerste 50 tokens van chunk N+1)
-- [ ] **T12.4** Pytest `chunk_text`: korte input van 100 woorden → verifieer dat er precies 1 chunk is
-- [ ] **T12.5** Pytest `embed_chunks` (mock OpenAI API): verifieer dat de functie batches van max 100 stuurt en vectors van 1536 dimensies retourneert
-- [ ] **T12.6** Integratietest `embedding_pipeline` (mock Supabase + mock OpenAI): verifieer dat de volledige flow draait: download → extract → chunk → embed → insert chunks → update material
+- [x] **T12.2** Pytest `extract_docx`: parse een test DOCX, verifieer dat alle paragrafen in de output staan
+- [x] **T12.3** Pytest `chunk_text`: input van 2000 woorden → verifieer dat er meerdere chunks zijn, elk ≤600 tokens (~2400 karakters), met overlap (laatste 50 tokens van chunk N = eerste 50 tokens van chunk N+1)
+- [x] **T12.4** Pytest `chunk_text`: korte input van 100 woorden → verifieer dat er precies 1 chunk is
+- [x] **T12.5** Pytest `embed_chunks` (mock OpenAI API): verifieer dat de functie batches van max 100 stuurt en vectors van 1536 dimensies retourneert
+- [x] **T12.6** Integratietest `embedding_pipeline` (mock Supabase + mock OpenAI): verifieer dat de volledige flow draait: download → extract → chunk → embed → insert chunks → update material
 
 ---
 
 ### 13. RAG Retrieval & Vraaggerneratie
 
-- [ ] **13.1** Maak `sidecar/rag/retriever.py` met `retrieve_chunks(query, material_id, top_k=5) -> list[Chunk]`:
+- [x] **13.1** Maak `sidecar/rag/retriever.py` met `retrieve_chunks(query, material_id, top_k=5) -> list[Chunk]`:
   - **13.1a** Genereer embedding voor de query tekst via OpenAI
   - **13.1b** Roep Supabase RPC `match_chunks()` aan met de query embedding en material_id filter
   - **13.1c** Retourneer top-k chunks gesorteerd op similarity
-- [ ] **13.2** Maak `sidecar/llm/prompts/generation.py`:
+- [x] **13.2** Maak `sidecar/llm/prompts/generation.py`:
   - **13.2a** Definieer `SYSTEM_PROMPT_GENERATION` constante
   - **13.2b** Implementeer `build_generation_prompt(specification, chunks, criteria)` die de 4-lagen prompt bouwt: system, specificatie, bronmateriaal chunks (met pagina-referenties), kwaliteitsregels
-- [ ] **13.3** Voeg `generate_questions()` method toe aan `LLMClient` (als nog niet volledig geimplementeerd): roep `client.messages.parse()` aan met `output_format=GenerationResult`, temperature=0.5
-- [ ] **13.4** Maak `sidecar/services/generation_pipeline.py` met `run_generation(job_id)`:
+- [x] **13.3** Voeg `generate_questions()` method toe aan `LLMClient` (als nog niet volledig geimplementeerd): roep `client.messages.parse()` aan met `output_format=GenerationResult`, temperature=0.5
+- [x] **13.4** Maak `sidecar/services/generation_pipeline.py` met `run_generation(job_id)`:
   - **13.4a** Lees `generation_jobs` record uit Supabase om specification en material_id op te halen
   - **13.4b** Retrieve relevante chunks via `retriever.retrieve_chunks()` met het leerdoel als query
   - **13.4c** Genereer vragen via `llm_client.generate_questions()`
   - **13.4d** Schrijf gegenereerde vragen naar `questions` tabel (met `source='generated'`)
   - **13.4e** Draai automatisch de validatie pipeline op de gegenereerde vragen (hergebruik `validation_pipeline`)
   - **13.4f** Update `generation_jobs.status` en `generation_jobs.result_question_ids`
-- [ ] **13.5** Voeg POST `/generate` route toe aan `sidecar/main.py`
-- [ ] **13.6** Maak `supabase functions new generate` Edge Function:
+- [x] **13.5** Voeg POST `/generate` route toe aan `sidecar/main.py`
+- [x] **13.6** Maak `supabase functions new generate` Edge Function:
   - **13.6a** Valideer request: `material_id`, `specification` (count, bloom_level, learning_goal, num_options)
   - **13.6b** Maak `generation_jobs` record aan
   - **13.6c** POST naar sidecar `/generate` met `{job_id}` — fire-and-forget
@@ -354,10 +354,10 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 #### Tests taak 13
 
-- [ ] **T13.1** Pytest `retrieve_chunks` (mock OpenAI + mock Supabase RPC): verifieer dat een query leidt tot een embedding call en een `match_chunks` RPC call met correcte parameters
-- [ ] **T13.2** Pytest `build_generation_prompt`: verifieer dat output system prompt, `<specification>` tag, `<source_material>` met chunk tags, en `<quality_rules>` bevat
+- [x] **T13.1** Pytest `retrieve_chunks` (mock OpenAI + mock Supabase RPC): verifieer dat een query leidt tot een embedding call en een `match_chunks` RPC call met correcte parameters
+- [x] **T13.2** Pytest `build_generation_prompt`: verifieer dat output system prompt, `<specification>` tag, `<source_material>` met chunk tags, en `<quality_rules>` bevat
 - [ ] **T13.3** Integratietest (vereist `ANTHROPIC_API_KEY`): roep `llm_client.generate_questions()` aan met 2 dummy chunks en specificatie voor 2 vragen op Bloom-niveau "toepassen". Verifieer dat resultaat 2 `GeneratedQuestion` objecten bevat met alle velden gevuld en `source_chunk_ids` die verwijzen naar de meegegeven chunks
-- [ ] **T13.4** Pytest `generation_pipeline` (mock alles): verifieer de volledige flow: lees job → retrieve chunks → generate → insert questions → run validation → update job
+- [x] **T13.4** Pytest `generation_pipeline` (mock alles): verifieer de volledige flow: lees job → retrieve chunks → generate → insert questions → run validation → update job
 - [ ] **T13.5** Edge Function test: POST naar `/functions/v1/generate` met geldige data → response bevat `{job_id, status: "processing"}` en een `generation_jobs` record is aangemaakt in de database
 
 ---

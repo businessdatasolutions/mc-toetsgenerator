@@ -1,8 +1,9 @@
 import anthropic
 
 from config.settings import settings
+from llm.prompts.generation import build_generation_prompt
 from llm.prompts.validation import build_validation_prompt
-from llm.schemas import ValidationResult
+from llm.schemas import GenerationResult, ValidationResult
 
 
 class LLMValidationError(Exception):
@@ -71,6 +72,60 @@ class LLMClient:
         for block in response.content:
             if block.type == "tool_use" and block.name == "validation_result":
                 return ValidationResult.model_validate(block.input)
+
+        raise LLMValidationError(
+            f"Unexpected response structure from LLM. "
+            f"Stop reason: {response.stop_reason}"
+        )
+
+    def generate_questions(
+        self,
+        specification: dict,
+        chunks: list,
+        model: str | None = None,
+    ) -> GenerationResult:
+        """Generate MC questions based on source material chunks.
+
+        Args:
+            specification: Dict with count, bloom_level, learning_goal, num_options.
+            chunks: List of Chunk objects from retrieval.
+            model: Model to use (defaults to Sonnet).
+
+        Returns:
+            GenerationResult with generated questions.
+
+        Raises:
+            LLMValidationError: If the LLM refuses or hits max tokens.
+        """
+        messages = build_generation_prompt(specification, chunks)
+        system_msg = messages[0]["content"]
+        user_msg = messages[1]["content"]
+
+        response = self.client.messages.create(
+            model=model or self.MODEL_SONNET,
+            max_tokens=4096,
+            temperature=0.5,
+            system=system_msg,
+            messages=[{"role": "user", "content": user_msg}],
+            tools=[
+                {
+                    "name": "generation_result",
+                    "description": "Output the generated MC questions.",
+                    "input_schema": GenerationResult.model_json_schema(),
+                }
+            ],
+            tool_choice={"type": "tool", "name": "generation_result"},
+        )
+
+        if response.stop_reason == "max_tokens":
+            raise LLMValidationError(
+                "LLM response was truncated (max_tokens reached). "
+                "Try generating fewer questions or reducing source material."
+            )
+
+        for block in response.content:
+            if block.type == "tool_use" and block.name == "generation_result":
+                return GenerationResult.model_validate(block.input)
 
         raise LLMValidationError(
             f"Unexpected response structure from LLM. "
