@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+anthropic
+pydantic
+pydantic-settings
+supabase
+openpyxl
+python-docx
+pdfplumber
+httpx
+pytest
+pytest-asyncio
