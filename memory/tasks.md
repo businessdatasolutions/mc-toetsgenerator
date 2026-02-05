@@ -364,20 +364,20 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 ### 14. Generatie Frontend
 
-- [ ] **14.1** Implementeer `src/routes/MaterialUpload.tsx`:
+- [x] **14.1** Implementeer `src/routes/MaterialUpload.tsx`:
   - **14.1a** FileUploader component die PDF, DOCX, en TXT accepteert
   - **14.1b** Upload bestand naar Supabase Storage bucket `materials`
   - **14.1c** Maak `materials` record in Supabase
   - **14.1d** Trigger embedding via Edge Function `embed-material`
   - **14.1e** Toon processing indicator, wacht op chunk_count > 0 via polling of realtime
   - **14.1f** Na verwerking: navigeer naar `/generate` met material_id als state
-- [ ] **14.2** Implementeer `src/routes/GenerateSpec.tsx`:
+- [x] **14.2** Implementeer `src/routes/GenerateSpec.tsx`:
   - **14.2a** Selecteer materiaal (dropdown met eerder geüploade materials)
   - **14.2b** Invoervelden: aantal vragen (number input, 1-20), Bloom-niveau (select: onthouden/begrijpen/toepassen/analyseren), leerdoel (text input), aantal opties (radio: 3 of 4)
   - **14.2c** Optioneel: koppel aan bestaand exam (select dropdown)
   - **14.2d** "Genereer" knop: POST naar Edge Function `/generate`, navigeer naar review pagina
-- [ ] **14.3** Maak `src/hooks/useGenerationJob.ts`: poll `generation_jobs` status elke 3 seconden tot status != 'pending'/'processing'
-- [ ] **14.4** Implementeer `src/routes/GenerateReview.tsx`:
+- [x] **14.3** Maak `src/hooks/useGenerationJob.ts`: poll `generation_jobs` status elke 3 seconden tot status != 'pending'/'processing'
+- [x] **14.4** Implementeer `src/routes/GenerateReview.tsx`:
   - **14.4a** Toon loading state terwijl job processing is
   - **14.4b** Na completion: toon lijst van gegenereerde vragen als QuestionCards met scores
   - **14.4c** Per vraag: "Accepteren" knop (behoudt vraag), "Verwijderen" knop (verwijdert uit questions tabel)
@@ -386,11 +386,11 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 #### Tests taak 14
 
-- [ ] **T14.1** React test `MaterialUpload`: render, simuleer file drop + submit, verifieer dat Supabase storage upload en materials insert aangeroepen worden
-- [ ] **T14.2** React test `GenerateSpec`: render, vul alle velden in, klik "Genereer", verifieer dat Edge Function call gedaan wordt met correcte specification
-- [ ] **T14.3** React test `GenerateReview`: render met mock generation job (status 'completed') en 3 gegenereerde vragen, verifieer dat 3 QuestionCards gerenderd worden met "Accepteren" en "Verwijderen" knoppen
-- [ ] **T14.4** React test `GenerateReview`: klik op "Verwijderen" bij vraag 2, verifieer dat een Supabase delete call gedaan wordt en de vraag uit de lijst verdwijnt
-- [ ] **T14.5** `npm run build` slaagt zonder TypeScript errors
+- [x] **T14.1** React test `MaterialUpload`: render, simuleer file drop + submit, verifieer dat Supabase storage upload en materials insert aangeroepen worden
+- [x] **T14.2** React test `GenerateSpec`: render, vul alle velden in, klik "Genereer", verifieer dat Edge Function call gedaan wordt met correcte specification
+- [x] **T14.3** React test `GenerateReview`: render met mock generation job (status 'completed') en 3 gegenereerde vragen, verifieer dat 3 QuestionCards gerenderd worden met "Accepteren" en "Verwijderen" knoppen
+- [x] **T14.4** React test `GenerateReview`: klik op "Verwijderen" bij vraag 2, verifieer dat een Supabase delete call gedaan wordt en de vraag uit de lijst verdwijnt
+- [x] **T14.5** `npm run build` slaagt zonder TypeScript errors
 - [ ] **T14.6** Handmatige end-to-end test: upload een studiemateriaal PDF, wacht op embedding, specificeer 3 vragen op Bloom-niveau "begrijpen", bekijk gegenereerde vragen, accepteer 2 en verwijder 1, exporteer als CSV
 
 ---

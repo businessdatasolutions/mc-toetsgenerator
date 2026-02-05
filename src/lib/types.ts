@@ -85,3 +85,21 @@ export interface Material {
   chunk_count: number
   created_at: string
 }
+
+export interface GenerationJob {
+  id: string
+  created_by: string
+  material_id: string | null
+  exam_id: string | null
+  specification: {
+    count: number
+    bloom_level: BloomLevel
+    learning_goal: string
+    num_options: number
+  }
+  status: AnalysisStatus
+  result_question_ids: string[]
+  error_message: string | null
+  created_at: string
+  completed_at: string | null
+}
