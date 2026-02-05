@@ -139,28 +139,28 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 ### 6. LLM Client & Structured Output
 
-- [ ] **6.1** Maak `sidecar/llm/schemas.py` met alle Pydantic models: `ImprovementSuggestion`, `ValidationResult`, `QuestionOption`, `GeneratedQuestion`, `GenerationResult` (zie TDD sectie 5.5)
-- [ ] **6.2** Maak `sidecar/llm/prompts/validation.py` met `SYSTEM_PROMPT_VALIDATION` constante en `build_validation_prompt()` functie (zie TDD sectie 5.4). De functie leest de drie criteria markdown bestanden en bouwt de 4-lagen prompt op
-- [ ] **6.3** Kopieer of symlink de criteria bestanden naar `sidecar/criteria/`: `betrouwbaarheid.md`, `technisch.md`, `validiteit.md`
-- [ ] **6.4** Maak `sidecar/llm/client.py` met `LLMClient` class:
+- [x] **6.1** Maak `sidecar/llm/schemas.py` met alle Pydantic models: `ImprovementSuggestion`, `ValidationResult`, `QuestionOption`, `GeneratedQuestion`, `GenerationResult` (zie TDD sectie 5.5)
+- [x] **6.2** Maak `sidecar/llm/prompts/validation.py` met `SYSTEM_PROMPT_VALIDATION` constante en `build_validation_prompt()` functie (zie TDD sectie 5.4). De functie leest de drie criteria markdown bestanden en bouwt de 4-lagen prompt op
+- [x] **6.3** Kopieer of symlink de criteria bestanden naar `sidecar/criteria/`: `betrouwbaarheid.md`, `technisch.md`, `validiteit.md`
+- [x] **6.4** Maak `sidecar/llm/client.py` met `LLMClient` class:
   - **6.4a** Constructor: initialiseer `anthropic.Anthropic()`, sla model names op (`claude-sonnet-4-5-20241022`, `claude-opus-4-5-20250514`)
   - **6.4b** `validate_question()` method: roep `client.messages.parse()` aan met `output_format=ValidationResult`, temperature=0.0 (zie TDD sectie 5.3)
   - **6.4c** Foutafhandeling: vang `stop_reason == "refusal"` en `stop_reason == "max_tokens"` af en raise een custom exception met duidelijk bericht
-- [ ] **6.5** Maak `sidecar/services/validation_pipeline.py` met `run_validation(exam_id)`:
+- [x] **6.5** Maak `sidecar/services/validation_pipeline.py` met `run_validation(exam_id)`:
   - **6.5a** Haal vragen op uit Supabase via service role client
   - **6.5b** Per vraag: draai `deterministic.analyze()`, dan `llm_client.validate_question()`
   - **6.5c** Schrijf de gecombineerde resultaten (deterministic + LLM) als assessment naar Supabase
   - **6.5d** Update `exams.analysis_status` naar `'completed'` (of `'failed'` bij errors)
   - **6.5e** Gebruik `asyncio.gather()` met `max_concurrency=5` (semaphore) voor parallelle LLM calls
-- [ ] **6.6** Voeg POST `/analyze` route toe aan `sidecar/main.py`: accepteert `{exam_id: str}`, roept `run_validation()` aan
+- [x] **6.6** Voeg POST `/analyze` route toe aan `sidecar/main.py`: accepteert `{exam_id: str}`, roept `run_validation()` aan
 
 #### Tests taak 6
 
-- [ ] **T6.1** Pytest: `ValidationResult` Pydantic model accepteert correcte data en reject ongeldige data (bijv. `bet_score=6` faalt, `bet_discriminatie="ongeldig"` faalt)
-- [ ] **T6.2** Pytest: `build_validation_prompt()` retourneert een list met 2 dicts (system + user). De user content bevat alle drie criteria XML-tags en de `<question>` en `<deterministic_results>` tags
-- [ ] **T6.3** Pytest: `build_validation_prompt()` bevat GEEN `<output_schema>` tag (want structured output regelt dat)
+- [x] **T6.1** Pytest: `ValidationResult` Pydantic model accepteert correcte data en reject ongeldige data (bijv. `bet_score=6` faalt, `bet_discriminatie="ongeldig"` faalt)
+- [x] **T6.2** Pytest: `build_validation_prompt()` retourneert een list met 2 dicts (system + user). De user content bevat alle drie criteria XML-tags en de `<question>` en `<deterministic_results>` tags
+- [x] **T6.3** Pytest: `build_validation_prompt()` bevat GEEN `<output_schema>` tag (want structured output regelt dat)
 - [ ] **T6.4** Integratietest (vereist `ANTHROPIC_API_KEY` env var): roep `llm_client.validate_question()` aan met een voorbeeld MC-vraag. Verifieer dat het resultaat een `ValidationResult` instance is met alle velden gevuld, scores tussen 1-5, en `bet_discriminatie` in `["hoog","gemiddeld","laag","geen"]`
-- [ ] **T6.5** Pytest: `validation_pipeline` — mock de Supabase client en LLM client. Verifieer dat voor 3 vragen: 3 deterministic analyses draaien, 3 LLM calls plaatsvinden, 3 assessments geschreven worden, en de exam status geüpdatet wordt
+- [x] **T6.5** Pytest: `validation_pipeline` — mock de Supabase client en LLM client. Verifieer dat voor 3 vragen: 3 deterministic analyses draaien, 3 LLM calls plaatsvinden, 3 assessments geschreven worden, en de exam status geüpdatet wordt
 
 ---
 
