@@ -7,6 +7,7 @@ from llm.client import LLMClient
 from parsers.csv_parser import parse_csv
 from parsers.docx_parser import parse_docx
 from parsers.xlsx_parser import parse_xlsx
+from services.embedding_pipeline import run_embedding
 from services.supabase_client import get_supabase_client
 from services.validation_pipeline import run_validation
 
@@ -15,6 +16,10 @@ app = FastAPI(title="MC Toetsvalidatie Sidecar")
 
 class AnalyzeRequest(BaseModel):
     exam_id: str
+
+
+class EmbedRequest(BaseModel):
+    material_id: str
 
 
 @app.get("/health")
@@ -33,6 +38,15 @@ async def analyze(request: AnalyzeRequest, background_tasks: BackgroundTasks):
     )
 
     return {"status": "processing", "exam_id": request.exam_id}
+
+
+@app.post("/embed")
+async def embed(request: EmbedRequest, background_tasks: BackgroundTasks):
+    background_tasks.add_task(
+        asyncio.run,
+        run_embedding(request.material_id),
+    )
+    return {"status": "processing", "material_id": request.material_id}
 
 
 @app.post("/parse")

@@ -226,20 +226,20 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 ### 9. Dashboard Frontend
 
-- [ ] **9.1** Maak `src/hooks/useExam.ts`: custom hook die een exam ophaalt op basis van `examId` URL param, inclusief realtime subscription op `exams.analysis_status` veranderingen
-- [ ] **9.2** Maak `src/hooks/useQuestions.ts`: custom hook die vragen + assessments ophaalt voor een exam (`supabase.from('questions').select('*, assessments(*)').eq('exam_id', id)`)
-- [ ] **9.3** Maak `src/components/ScoreBadge.tsx`: component dat een score (1-5) als badge toont. Kleuren: 1-2 = rood (`bg-red-500`), 3 = geel (`bg-yellow-500`), 4-5 = groen (`bg-green-500`). Toont het getal in de badge
-- [ ] **9.4** Maak `src/components/BloomBadge.tsx`: component dat een Bloom-niveau toont als gekleurd label. Kleuren: Onthouden = grijs, Begrijpen = blauw, Toepassen = teal, Analyseren = goud
-- [ ] **9.5** Maak `src/components/QuestionCard.tsx`: compact kaartje per vraag met: vraagnummer, stam (eerste 80 karakters), 3 ScoreBadges (B/T/V), BloomBadge, en een link naar de detail-pagina
-- [ ] **9.6** Maak `src/components/RadarChart.tsx`: driehoekig radardiagram met drie assen (Betrouwbaarheid, Technisch, Validiteit). Gebruik SVG of een lichtgewicht chart library. Input: `{bet: number, tech: number, val: number}` (elk 1-5)
-- [ ] **9.7** Maak `src/components/Heatmap.tsx`: matrix-tabel met rijen = vragen, kolommen = B/T/V. Elke cel heeft achtergrondkleur op basis van score (1=donkerrood, 5=donkergroen). Sorteerbaar per kolom
-- [ ] **9.8** Implementeer `src/routes/ExamDashboard.tsx`:
+- [x] **9.1** Maak `src/hooks/useExam.ts`: custom hook die een exam ophaalt op basis van `examId` URL param, inclusief realtime subscription op `exams.analysis_status` veranderingen
+- [x] **9.2** Maak `src/hooks/useQuestions.ts`: custom hook die vragen + assessments ophaalt voor een exam (`supabase.from('questions').select('*, assessments(*)').eq('exam_id', id)`)
+- [x] **9.3** Maak `src/components/ScoreBadge.tsx`: component dat een score (1-5) als badge toont. Kleuren: 1-2 = rood (`bg-red-500`), 3 = geel (`bg-yellow-500`), 4-5 = groen (`bg-green-500`). Toont het getal in de badge
+- [x] **9.4** Maak `src/components/BloomBadge.tsx`: component dat een Bloom-niveau toont als gekleurd label. Kleuren: Onthouden = grijs, Begrijpen = blauw, Toepassen = teal, Analyseren = goud
+- [x] **9.5** Maak `src/components/QuestionCard.tsx`: compact kaartje per vraag met: vraagnummer, stam (eerste 80 karakters), 3 ScoreBadges (B/T/V), BloomBadge, en een link naar de detail-pagina
+- [x] **9.6** Maak `src/components/RadarChart.tsx`: driehoekig radardiagram met drie assen (Betrouwbaarheid, Technisch, Validiteit). Gebruik SVG of een lichtgewicht chart library. Input: `{bet: number, tech: number, val: number}` (elk 1-5)
+- [x] **9.7** Maak `src/components/Heatmap.tsx`: matrix-tabel met rijen = vragen, kolommen = B/T/V. Elke cel heeft achtergrondkleur op basis van score (1=donkerrood, 5=donkergroen). Sorteerbaar per kolom
+- [x] **9.8** Implementeer `src/routes/ExamDashboard.tsx`:
   - **9.8a** Bovenaan: 3 KPI-kaarten met gemiddelde score per dimensie (roep `exam_score_summary()` RPC aan)
   - **9.8b** Daaronder: Heatmap component met alle vragen
   - **9.8c** Daaronder: lijst van QuestionCards, sorteerbaar en filterbaar (filter op score-range, Bloom-niveau)
   - **9.8d** "Aandachtsvragen" sectie: toon vragen waar minstens 1 dimensie ≤ 2
   - **9.8e** Loading state tonen terwijl `analysis_status === 'processing'`, met realtime update naar resultaten wanneer `'completed'`
-- [ ] **9.9** Implementeer `src/routes/QuestionDetail.tsx`:
+- [x] **9.9** Implementeer `src/routes/QuestionDetail.tsx`:
   - **9.9a** Toon volledige vraag: stam, alle opties met markering van correct antwoord
   - **9.9b** RadarChart met de drie dimensiescores
   - **9.9c** Per dimensie een uitklapbare sectie met: score, toelichting (`*_toelichting`), en voor technisch: de deelscores (stam, afleiders) en deterministic flags
@@ -248,29 +248,29 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 #### Tests taak 9
 
-- [ ] **T9.1** React test `ScoreBadge`: render met score 1 → bevat klasse `bg-red-500`; score 3 → `bg-yellow-500`; score 5 → `bg-green-500`
-- [ ] **T9.2** React test `BloomBadge`: render met "toepassen" → toont "Toepassen" met teal styling
-- [ ] **T9.3** React test `QuestionCard`: render met mock vraag + assessment data, verifieer dat stam, 3 scores, en Bloom-badge zichtbaar zijn
-- [ ] **T9.4** React test `Heatmap`: render met 5 mock vragen, verifieer dat 5 rijen en 3 kolommen gerenderd worden
-- [ ] **T9.5** React test `ExamDashboard`: mock Supabase hooks, render met 3 vragen, verifieer dat KPI-kaarten, heatmap, en question cards gerenderd worden
-- [ ] **T9.6** React test `QuestionDetail`: render met mock vraag + assessment, verifieer dat stam, opties, radar chart, toelichtingen, en verbetervoorstellen zichtbaar zijn
-- [ ] **T9.7** `npm run build` slaagt zonder TypeScript errors
+- [x] **T9.1** React test `ScoreBadge`: render met score 1 → bevat klasse `bg-red-500`; score 3 → `bg-yellow-500`; score 5 → `bg-green-500`
+- [x] **T9.2** React test `BloomBadge`: render met "toepassen" → toont "Toepassen" met teal styling
+- [x] **T9.3** React test `QuestionCard`: render met mock vraag + assessment data, verifieer dat stam, 3 scores, en Bloom-badge zichtbaar zijn
+- [x] **T9.4** React test `Heatmap`: render met 5 mock vragen, verifieer dat 5 rijen en 3 kolommen gerenderd worden
+- [x] **T9.5** React test `ExamDashboard`: mock Supabase hooks, render met 3 vragen, verifieer dat KPI-kaarten, heatmap, en question cards gerenderd worden
+- [x] **T9.6** React test `QuestionDetail`: render met mock vraag + assessment, verifieer dat stam, opties, radar chart, toelichtingen, en verbetervoorstellen zichtbaar zijn
+- [x] **T9.7** `npm run build` slaagt zonder TypeScript errors
 
 ---
 
 ### 10. Export Functionaliteit
 
-- [ ] **10.1** Maak `src/lib/api.ts`: wrapper functie `exportExam(examId: string, format: 'csv' | 'pdf' | 'markdown')` die de Edge Function aanroept en het bestand download
-- [ ] **10.2** Implementeer `src/routes/Export.tsx`:
+- [x] **10.1** Maak `src/lib/api.ts`: wrapper functie `exportExam(examId: string, format: 'csv' | 'pdf' | 'markdown')` die de Edge Function aanroept en het bestand download
+- [x] **10.2** Implementeer `src/routes/Export.tsx`:
   - **10.2a** Toon 3 knoppen: CSV, PDF, Markdown
   - **10.2b** Bij klik: roep `exportExam()` aan, toon loading indicator, trigger browser download bij succes
   - **10.2c** Foutmelding tonen bij failure
-- [ ] **10.3** Implementeer CSV export in de Edge Function: genereer CSV string met kolommen: `vraagnummer, stam, correct_antwoord, bloom_niveau, bet_score, tech_kwal_score, val_score, tech_kwant_flags, improvement_suggestions`
-- [ ] **10.4** Implementeer Markdown export in de Edge Function: genereer gestructureerd Markdown rapport met overzichtstabel en per-vraag detail secties
+- [x] **10.3** Implementeer CSV export in de Edge Function: genereer CSV string met kolommen: `vraagnummer, stam, correct_antwoord, bloom_niveau, bet_score, tech_kwal_score, val_score, tech_kwant_flags, improvement_suggestions`
+- [x] **10.4** Implementeer Markdown export in de Edge Function: genereer gestructureerd Markdown rapport met overzichtstabel en per-vraag detail secties
 
 #### Tests taak 10
 
-- [ ] **T10.1** React test `Export`: render component, klik op "CSV" knop, verifieer dat `exportExam()` aangeroepen wordt met format "csv"
+- [x] **T10.1** React test `Export`: render component, klik op "CSV" knop, verifieer dat `exportExam()` aangeroepen wordt met format "csv"
 - [ ] **T10.2** Edge Function test: roep export aan met format=csv voor een exam met 3 vragen, verifieer dat CSV output 4 regels bevat (1 header + 3 vragen) en alle score-kolommen aanwezig zijn
 - [ ] **T10.3** Edge Function test: roep export aan met format=markdown, verifieer dat output geldige Markdown is met `#` headers en een tabel
 
@@ -278,14 +278,14 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 ### 11. GitHub Pages Deployment
 
-- [ ] **11.1** Maak `.github/workflows/deploy.yml` met de GitHub Actions workflow (zie TDD sectie 9.1): checkout, setup node 22, npm ci, npm run build met env vars uit secrets, upload pages artifact, deploy to pages
-- [ ] **11.2** Configureer GitHub repository settings: enable GitHub Pages met "GitHub Actions" als source
-- [ ] **11.3** Voeg `VITE_SUPABASE_URL` en `VITE_SUPABASE_ANON_KEY` toe als repository secrets in GitHub
-- [ ] **11.4** Maak een initial commit en push naar `main`
+- [x] **11.1** Maak `.github/workflows/deploy.yml` met de GitHub Actions workflow (zie TDD sectie 9.1): checkout, setup node 22, npm ci, npm run build met env vars uit secrets, upload pages artifact, deploy to pages
+- [ ] **11.2** Configureer GitHub repository settings: enable GitHub Pages met "GitHub Actions" als source (NOTE: vereist publieke repo of GitHub Pro plan)
+- [x] **11.3** Voeg `VITE_SUPABASE_URL` en `VITE_SUPABASE_ANON_KEY` toe als repository secrets in GitHub
+- [x] **11.4** Maak een initial commit en push naar `main`
 
 #### Tests taak 11
 
-- [ ] **T11.1** GitHub Actions workflow runt succesvol: build stap slaagt, deploy stap slaagt
+- [ ] **T11.1** GitHub Actions workflow runt succesvol: build stap slaagt, deploy stap slaagt (NOTE: wacht op Pages enablement)
 - [ ] **T11.2** De site is bereikbaar op `https://<username>.github.io/mc-toetsgenerator/`
 - [ ] **T11.3** SPA routing werkt: navigeer direct naar `https://<username>.github.io/mc-toetsgenerator/exams/upload` → de Upload pagina wordt getoond (niet een 404)
 - [ ] **T11.4** Supabase connectie werkt: de login-pagina kan communiceren met Supabase Auth
