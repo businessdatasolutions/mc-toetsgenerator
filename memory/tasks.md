@@ -55,25 +55,25 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 ### 3. Row Level Security & Database Functies
 
-- [ ] **3.1** Maak migratie: `supabase migration new rls_policies`
-- [ ] **3.2** Schakel RLS in op alle 6 tabellen (`ALTER TABLE ... ENABLE ROW LEVEL SECURITY`)
-- [ ] **3.3** Schrijf RLS policy voor `exams`: gebruiker kan alleen eigen exams CRUD-en (`auth.uid() = created_by`)
-- [ ] **3.4** Schrijf RLS policy voor `questions`: toegang via exam ownership
-- [ ] **3.5** Schrijf RLS policies voor `assessments`: SELECT via question→exam ownership, INSERT alleen voor service_role
-- [ ] **3.6** Schrijf RLS policy voor `materials`: gebruiker kan alleen eigen uploads CRUD-en
-- [ ] **3.7** Schrijf RLS policy voor `chunks`: SELECT via material ownership
-- [ ] **3.8** Maak migratie: `supabase migration new database_functions`
-- [ ] **3.9** Schrijf de `match_chunks()` functie (vector similarity search, zie TDD sectie 3.3)
-- [ ] **3.10** Schrijf de `exam_score_summary()` functie (geaggregeerde scores, zie TDD sectie 3.3)
+- [x] **3.1** Maak migratie: `supabase migration new rls_policies`
+- [x] **3.2** Schakel RLS in op alle 6 tabellen (`ALTER TABLE ... ENABLE ROW LEVEL SECURITY`)
+- [x] **3.3** Schrijf RLS policy voor `exams`: gebruiker kan alleen eigen exams CRUD-en (`auth.uid() = created_by`)
+- [x] **3.4** Schrijf RLS policy voor `questions`: toegang via exam ownership
+- [x] **3.5** Schrijf RLS policies voor `assessments`: SELECT via question→exam ownership, INSERT alleen voor service_role
+- [x] **3.6** Schrijf RLS policy voor `materials`: gebruiker kan alleen eigen uploads CRUD-en
+- [x] **3.7** Schrijf RLS policy voor `chunks`: SELECT via material ownership
+- [x] **3.8** Maak migratie: `supabase migration new database_functions`
+- [x] **3.9** Schrijf de `match_chunks()` functie (vector similarity search, zie TDD sectie 3.3)
+- [x] **3.10** Schrijf de `exam_score_summary()` functie (geaggregeerde scores, zie TDD sectie 3.3)
 
 #### Tests taak 3
 
-- [ ] **T3.1** Migraties zijn succesvol toegepast
-- [ ] **T3.2** RLS test: maak twee test-users via Supabase Auth. User A maakt een exam. User B mag dat exam NIET zien via een SDK query met User B's token
-- [ ] **T3.3** RLS test: User A kan eigen exam wel zien en updaten
-- [ ] **T3.4** Service role kan assessments inserten ongeacht ownership
-- [ ] **T3.5** `match_chunks()` functie is aanroepbaar: `SELECT * FROM match_chunks('[0.1, 0.2, ...]'::vector(1536))` geeft geen error (lege result set is ok)
-- [ ] **T3.6** `exam_score_summary()` geeft correcte aggregatie voor een exam met 3 vragen met bekende scores
+- [x] **T3.1** Migraties zijn succesvol toegepast
+- [x] **T3.2** RLS test: maak twee test-users via Supabase Auth. User A maakt een exam. User B mag dat exam NIET zien via een SDK query met User B's token
+- [x] **T3.3** RLS test: User A kan eigen exam wel zien en updaten
+- [x] **T3.4** Service role kan assessments inserten ongeacht ownership
+- [x] **T3.5** `match_chunks()` functie is aanroepbaar: `SELECT * FROM match_chunks('[0.1, 0.2, ...]'::vector(1536))` geeft geen error (lege result set is ok)
+- [x] **T3.6** `exam_score_summary()` geeft correcte aggregatie voor een exam met 3 vragen met bekende scores
 
 ---
 
