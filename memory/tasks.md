@@ -166,19 +166,19 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 ### 7. Supabase Edge Functions
 
-- [ ] **7.1** Initialiseer Supabase Edge Functions: `supabase functions new analyze`
-- [ ] **7.2** Schrijf `supabase/functions/analyze/index.ts`:
+- [x] **7.1** Initialiseer Supabase Edge Functions: `supabase functions new analyze`
+- [x] **7.2** Schrijf `supabase/functions/analyze/index.ts`:
   - **7.2a** Valideer dat request body `exam_id` (string, UUID) bevat
   - **7.2b** Controleer auth: haal de user session op uit de Authorization header
   - **7.2c** Verifieer dat de user eigenaar is van het exam (query naar `exams` tabel)
   - **7.2d** Update `exams.analysis_status` naar `'processing'`
   - **7.2e** Doe een HTTP POST naar de Python sidecar URL (`/analyze`) met `{exam_id}` — fire-and-forget (wacht niet op resultaat)
   - **7.2f** Retourneer `{job_id, status: "processing", question_count}`
-- [ ] **7.3** Maak `supabase functions new embed-material` en schrijf `index.ts`:
+- [x] **7.3** Maak `supabase functions new embed-material` en schrijf `index.ts`:
   - **7.3a** Valideer `material_id`, controleer ownership
   - **7.3b** POST naar sidecar `/embed` met `{material_id}`
   - **7.3c** Retourneer `{status: "processing", filename}`
-- [ ] **7.4** Maak `supabase functions new export` en schrijf `index.ts`:
+- [x] **7.4** Maak `supabase functions new export` en schrijf `index.ts`:
   - **7.4a** Accepteer query params `exam_id` en `format` (csv/pdf/markdown)
   - **7.4b** Haal alle vragen + assessments op voor het exam
   - **7.4c** Genereer export in het gevraagde formaat (CSV in Deno: handmatig string-bouwen; PDF/Markdown: via sidecar of inline template)
@@ -186,9 +186,9 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 #### Tests taak 7
 
-- [ ] **T7.1** Deploy Edge Functions naar Supabase: `supabase functions deploy analyze`, `supabase functions deploy embed-material`, `supabase functions deploy export` — alle drie slagen
+- [x] **T7.1** Deploy Edge Functions naar Supabase: `supabase functions deploy analyze`, `supabase functions deploy embed-material`, `supabase functions deploy export` — alle drie slagen
 - [ ] **T7.2** Handmatige test: stuur een `POST` naar `/functions/v1/analyze` met een geldig exam_id en Authorization header. Verifieer dat response status 200 is en body `{job_id, status: "processing"}` bevat
-- [ ] **T7.3** Auth test: stuur een request zonder Authorization header → verwacht 401
+- [x] **T7.3** Auth test: stuur een request zonder Authorization header → verwacht 401
 - [ ] **T7.4** Ownership test: stuur een request met User B's token voor User A's exam → verwacht 403
 - [ ] **T7.5** Export test: stuur `GET /functions/v1/export?exam_id=...&format=csv` → verifieer dat response Content-Type `text/csv` is en body geldige CSV bevat met kolommen voor stam, scores, flags
 
