@@ -79,22 +79,22 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 ### 4. Frontend Auth & Routing
 
-- [ ] **4.1** Maak `src/lib/supabase.ts`: exporteer `createClient<Database>(url, anonKey)` met env vars
-- [ ] **4.2** Maak `src/lib/types.ts` met TypeScript interfaces: `Exam`, `Question`, `QuestionOption`, `Assessment`, `Material` (spiegelend aan de database tabellen)
-- [ ] **4.3** Maak `src/context/AuthContext.tsx`: React context provider die `supabase.auth.getSession()` aanroept bij mount en `onAuthStateChange` luistert. Exporteert `useAuth()` hook met `session`, `user`, `loading`, `signIn()`, `signOut()`
-- [ ] **4.4** Maak `src/components/Layout/ProtectedRoute.tsx`: wrapper die redirect naar login als `session === null`
-- [ ] **4.5** Maak `src/components/Layout/Navbar.tsx`: navigatiebalk met links naar Home, Upload, Genereer. Toont gebruikersnaam en logout-knop als ingelogd
-- [ ] **4.6** Maak `src/App.tsx`: root layout component die `AuthContext.Provider` wrapt, `Navbar` toont, en een `<Outlet />` rendert voor child routes
-- [ ] **4.7** Maak placeholder route-componenten (lege componenten met alleen een `<h1>` titel): `Home.tsx`, `ExamUpload.tsx`, `ExamParsing.tsx`, `ExamDashboard.tsx`, `QuestionDetail.tsx`, `Export.tsx`, `MaterialUpload.tsx`, `GenerateSpec.tsx`, `GenerateReview.tsx`
-- [ ] **4.8** Configureer React Router in `src/main.tsx` met `createBrowserRouter` en `basename: "/mc-toetsgenerator"`. Definieer alle routes volgens TDD sectie 2.3
-- [ ] **4.9** Maak een simpele login-pagina (`src/routes/Login.tsx`) die `supabase.auth.signInWithPassword()` aanroept (voor development; SSO komt later)
+- [x] **4.1** Maak `src/lib/supabase.ts`: exporteer `createClient<Database>(url, anonKey)` met env vars
+- [x] **4.2** Maak `src/lib/types.ts` met TypeScript interfaces: `Exam`, `Question`, `QuestionOption`, `Assessment`, `Material` (spiegelend aan de database tabellen)
+- [x] **4.3** Maak `src/context/AuthContext.tsx`: React context provider die `supabase.auth.getSession()` aanroept bij mount en `onAuthStateChange` luistert. Exporteert `useAuth()` hook met `session`, `user`, `loading`, `signIn()`, `signOut()`
+- [x] **4.4** Maak `src/components/Layout/ProtectedRoute.tsx`: wrapper die redirect naar login als `session === null`
+- [x] **4.5** Maak `src/components/Layout/Navbar.tsx`: navigatiebalk met links naar Home, Upload, Genereer. Toont gebruikersnaam en logout-knop als ingelogd
+- [x] **4.6** Maak `src/App.tsx`: root layout component die `AuthContext.Provider` wrapt, `Navbar` toont, en een `<Outlet />` rendert voor child routes
+- [x] **4.7** Maak placeholder route-componenten (lege componenten met alleen een `<h1>` titel): `Home.tsx`, `ExamUpload.tsx`, `ExamParsing.tsx`, `ExamDashboard.tsx`, `QuestionDetail.tsx`, `Export.tsx`, `MaterialUpload.tsx`, `GenerateSpec.tsx`, `GenerateReview.tsx`
+- [x] **4.8** Configureer React Router in `src/main.tsx` met `createBrowserRouter` en `basename: "/mc-toetsgenerator"`. Definieer alle routes volgens TDD sectie 2.3
+- [x] **4.9** Maak een simpele login-pagina (`src/routes/Login.tsx`) die `supabase.auth.signInWithPassword()` aanroept (voor development; SSO komt later)
 
 #### Tests taak 4
 
-- [ ] **T4.1** Unit test `AuthContext`: mock `supabase.auth.getSession()` en verifieer dat `useAuth()` hook `session` en `user` correct retourneert
-- [ ] **T4.2** Unit test `ProtectedRoute`: rendert children als session aanwezig, redirect naar `/login` als session null
-- [ ] **T4.3** Navigatie test: render de router, navigeer naar `/exams/upload` en verifieer dat `ExamUpload` component gerenderd wordt (check op h1 tekst)
-- [ ] **T4.4** `npm run build` slaagt zonder TypeScript errors
+- [x] **T4.1** Unit test `AuthContext`: mock `supabase.auth.getSession()` en verifieer dat `useAuth()` hook `session` en `user` correct retourneert
+- [x] **T4.2** Unit test `ProtectedRoute`: rendert children als session aanwezig, redirect naar `/login` als session null
+- [x] **T4.3** Navigatie test: render de router, navigeer naar `/exams/upload` en verifieer dat `ExamUpload` component gerenderd wordt (check op h1 tekst)
+- [x] **T4.4** `npm run build` slaagt zonder TypeScript errors
 - [ ] **T4.5** Handmatige check: `npm run dev`, open browser, login-pagina wordt getoond. Na inloggen (met test-user uit Supabase dashboard) wordt Home getoond
 
 ---
