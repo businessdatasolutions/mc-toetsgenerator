@@ -31,25 +31,25 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 ### 2. Supabase Project & Database Schema
 
-- [ ] **2.1** Maak een Supabase project aan (EU-regio) via dashboard of CLI (`supabase init` lokaal)
-- [ ] **2.2** Maak de eerste migratie: `supabase migration new initial_schema`
-- [ ] **2.3** Schrijf SQL voor extensies: `pgvector` en `pg_net`
-- [ ] **2.4** Schrijf SQL voor enum types: `bloom_level`, `question_source`, `analysis_status`, `discriminatie_level`, `ambiguiteit_level`
-- [ ] **2.5** Schrijf SQL voor tabel `exams` met alle kolommen, primary key, default values en index op `created_by` (zie TDD sectie 3.1)
-- [ ] **2.6** Schrijf SQL voor tabel `questions` met foreign key naar `exams`, `valid_options` check constraint, en index op `exam_id`
-- [ ] **2.7** Schrijf SQL voor tabel `assessments` met alle `tech_kwant_*`, `bet_*`, `tech_kwal_*`, `val_*` kolommen, check constraints (1-5), unique constraint op `(question_id, question_version)`, en index
-- [ ] **2.8** Schrijf SQL voor tabel `materials` met foreign keys naar `auth.users` en `exams`
-- [ ] **2.9** Schrijf SQL voor tabel `chunks` met `vector(1536)` kolom, HNSW index op embedding, en foreign key naar `materials`
-- [ ] **2.10** Schrijf SQL voor tabel `generation_jobs` met foreign keys en `specification` jsonb kolom
-- [ ] **2.11** Pas migratie toe: `supabase db push` of `supabase migration up`
+- [x] **2.1** Maak een Supabase project aan (EU-regio) via dashboard of CLI (`supabase init` lokaal)
+- [x] **2.2** Maak de eerste migratie: `supabase migration new initial_schema`
+- [x] **2.3** Schrijf SQL voor extensies: `pgvector` en `pg_net`
+- [x] **2.4** Schrijf SQL voor enum types: `bloom_level`, `question_source`, `analysis_status`, `discriminatie_level`, `ambiguiteit_level`
+- [x] **2.5** Schrijf SQL voor tabel `exams` met alle kolommen, primary key, default values en index op `created_by` (zie TDD sectie 3.1)
+- [x] **2.6** Schrijf SQL voor tabel `questions` met foreign key naar `exams`, `valid_options` check constraint, en index op `exam_id`
+- [x] **2.7** Schrijf SQL voor tabel `assessments` met alle `tech_kwant_*`, `bet_*`, `tech_kwal_*`, `val_*` kolommen, check constraints (1-5), unique constraint op `(question_id, question_version)`, en index
+- [x] **2.8** Schrijf SQL voor tabel `materials` met foreign keys naar `auth.users` en `exams`
+- [x] **2.9** Schrijf SQL voor tabel `chunks` met `vector(1536)` kolom, HNSW index op embedding, en foreign key naar `materials`
+- [x] **2.10** Schrijf SQL voor tabel `generation_jobs` met foreign keys en `specification` jsonb kolom
+- [x] **2.11** Pas migratie toe: `supabase db push` of `supabase migration up`
 
 #### Tests taak 2
 
-- [ ] **T2.1** Migratie is succesvol: `supabase db push` geeft geen errors
-- [ ] **T2.2** Alle 6 tabellen bestaan: voer `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'` uit en verifieer dat `exams`, `questions`, `assessments`, `materials`, `chunks`, `generation_jobs` aanwezig zijn
-- [ ] **T2.3** Enum types bestaan: `SELECT typname FROM pg_type WHERE typname IN ('bloom_level','question_source','analysis_status','discriminatie_level','ambiguiteit_level')` geeft 5 rijen
-- [ ] **T2.4** Insert een test-exam, een test-question, en een test-assessment en verifieer dat constraints werken (bijv. `bet_score = 6` moet falen, `options` met 1 element moet falen)
-- [ ] **T2.5** pgvector extensie werkt: `SELECT '[1,2,3]'::vector(3)` geeft geen error
+- [x] **T2.1** Migratie is succesvol: `supabase db push` geeft geen errors
+- [x] **T2.2** Alle 6 tabellen bestaan: voer `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'` uit en verifieer dat `exams`, `questions`, `assessments`, `materials`, `chunks`, `generation_jobs` aanwezig zijn
+- [x] **T2.3** Enum types bestaan: `SELECT typname FROM pg_type WHERE typname IN ('bloom_level','question_source','analysis_status','discriminatie_level','ambiguiteit_level')` geeft 5 rijen
+- [x] **T2.4** Insert een test-exam, een test-question, en een test-assessment en verifieer dat constraints werken (bijv. `bet_score = 6` moet falen, `options` met 1 element moet falen)
+- [x] **T2.5** pgvector extensie werkt: `SELECT '[1,2,3]'::vector(3)` geeft geen error
 
 ---
 

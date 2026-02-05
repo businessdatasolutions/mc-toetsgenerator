@@ -66,3 +66,7 @@ The task plan in `memory/tasks.md` is the **leading document** for all implement
 - Bloom levels used: Onthouden, Begrijpen, Toepassen, Analyseren
 - Human-in-the-loop: AI outputs are always proposals requiring educator review — no auto-fix
 - Deterministic analysis fields are prefixed `tech_kwant_*`; AI assessment fields use `bet_*`, `tech_kwal_*`, `val_*`
+
+## temp/ Folder — Do NOT Delete
+
+The `temp/` folder contains an **isolated API integration prototype** used to validate the Claude API structured output approach (tool_choice with JSON schema) and the 3-dimension quality assessment prompt before building it into the main application. It has its own `package.json` and runs independently from the main Vite project. This prototype serves as a reference implementation for Task 6 (LLM Client & Structured Output) in the task plan.

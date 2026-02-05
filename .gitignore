@@ -8,6 +8,8 @@ dist/
 .env
 .env.local
 .env.*.local
+.local.env
+docs/.local.env
 
 # OS files
 .DS_Store
@@ -16,6 +18,9 @@ dist/
 .vscode/
 *.swp
 *.swo
+
+# Prototype / temp
+temp/
 
 # Logs
 *.log
