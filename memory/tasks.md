@@ -101,39 +101,39 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 ### 5. Python Sidecar Scaffold & Deterministische Analyzer
 
-- [ ] **5.1** Maak de directory `sidecar/` met `main.py`, `requirements.txt`, `Dockerfile`
-- [ ] **5.2** Schrijf `requirements.txt`: `fastapi`, `uvicorn[standard]`, `anthropic`, `pydantic`, `pydantic-settings`, `supabase`, `openpyxl`, `python-docx`, `pdfplumber`, `httpx`, `pytest`, `pytest-asyncio`
-- [ ] **5.3** Maak `sidecar/config/settings.py`: Pydantic `Settings` class die leest uit env vars: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`
-- [ ] **5.4** Maak `sidecar/main.py`: FastAPI app met `/health` endpoint dat `{"status": "ok"}` retourneert
-- [ ] **5.5** Maak `sidecar/analyzers/schemas.py`: `DeterministicResult` dataclass met alle `tech_kwant_*` velden (zie TDD sectie 5.2)
-- [ ] **5.6** Maak `sidecar/analyzers/deterministic.py` met functie `analyze(question) -> DeterministicResult`:
+- [x] **5.1** Maak de directory `sidecar/` met `main.py`, `requirements.txt`, `Dockerfile`
+- [x] **5.2** Schrijf `requirements.txt`: `fastapi`, `uvicorn[standard]`, `anthropic`, `pydantic`, `pydantic-settings`, `supabase`, `openpyxl`, `python-docx`, `pdfplumber`, `httpx`, `pytest`, `pytest-asyncio`
+- [x] **5.3** Maak `sidecar/config/settings.py`: Pydantic `Settings` class die leest uit env vars: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`
+- [x] **5.4** Maak `sidecar/main.py`: FastAPI app met `/health` endpoint dat `{"status": "ok"}` retourneert
+- [x] **5.5** Maak `sidecar/analyzers/schemas.py`: `DeterministicResult` dataclass met alle `tech_kwant_*` velden (zie TDD sectie 5.2)
+- [x] **5.6** Maak `sidecar/analyzers/deterministic.py` met functie `analyze(question) -> DeterministicResult`:
   - **5.6a** Implementeer langste-antwoord-bias check: correct antwoord >50% langer dan gemiddelde lengte van afleiders → `tech_kwant_longest_bias = True`
   - **5.6b** Implementeer homogeniteitscore: bereken standaarddeviatie van alle antwoordlengtes (in karakters), normaliseer naar 0.0–1.0 (1.0 = perfect homogeen) → `tech_kwant_homogeneity_score`
   - **5.6c** Implementeer absolute-termen detectie: scan correct antwoord en afleiders apart op de woordenlijst: `altijd, nooit, alle, geen, elke, iedere, uitsluitend, alleen, volledig, absoluut, zonder uitzondering` → `tech_kwant_absolute_terms_correct` en `tech_kwant_absolute_terms_distractors`
   - **5.6d** Implementeer ontkenning-detectie in stam: zoek naar `niet, geen, behalve, uitgezonderd` → `tech_kwant_negation_detected`
   - **5.6e** Implementeer ontkenning-nadruk check: controleer of gevonden ontkenning in hoofdletters (`NIET`) of markdown bold (`**niet**`) staat → `tech_kwant_negation_emphasized`
   - **5.6f** Genereer `tech_kwant_flags` lijst: voeg beschrijvende strings toe voor elk gedetecteerd probleem (bijv. `"langste-antwoord-bias"`, `"absolute-termen-in-correct-antwoord"`, `"ontkenning-zonder-nadruk"`)
-- [ ] **5.7** Maak `sidecar/services/supabase_client.py`: initialiseer Supabase client met service role key
+- [x] **5.7** Maak `sidecar/services/supabase_client.py`: initialiseer Supabase client met service role key
 
 #### Tests taak 5
 
-- [ ] **T5.1** `cd sidecar && pip install -r requirements.txt` installeert zonder errors
-- [ ] **T5.2** `cd sidecar && uvicorn main:app` start op en `curl localhost:8000/health` retourneert `{"status": "ok"}`
-- [ ] **T5.3** Pytest: langste-antwoord-bias detectie:
+- [x] **T5.1** `cd sidecar && pip install -r requirements.txt` installeert zonder errors
+- [x] **T5.2** `cd sidecar && uvicorn main:app` start op en `curl localhost:8000/health` retourneert `{"status": "ok"}`
+- [x] **T5.3** Pytest: langste-antwoord-bias detectie:
   - Input: stam="Wat is X?", opties=["Kort", "Kort", "Dit is een heel lang antwoord dat duidelijk langer is", "Kort"], correct=2 → `tech_kwant_longest_bias = True`
   - Input: stam="Wat is X?", opties=["Optie A hier", "Optie B hier", "Optie C hier", "Optie D hier"], correct=0 → `tech_kwant_longest_bias = False`
-- [ ] **T5.4** Pytest: homogeniteitscore:
+- [x] **T5.4** Pytest: homogeniteitscore:
   - Input met identieke lengte opties → score dicht bij 1.0
   - Input met sterk varierende lengte → score dicht bij 0.0
-- [ ] **T5.5** Pytest: absolute-termen detectie:
+- [x] **T5.5** Pytest: absolute-termen detectie:
   - Input: correct antwoord bevat "altijd" → `tech_kwant_absolute_terms_correct = ["altijd"]`
   - Input: afleider bevat "nooit" en "alle" → `tech_kwant_absolute_terms_distractors = ["nooit", "alle"]`
   - Input: geen absolute termen → beide lijsten leeg
-- [ ] **T5.6** Pytest: ontkenning-detectie:
+- [x] **T5.6** Pytest: ontkenning-detectie:
   - Stam "Welke stelling is NIET correct?" → `negation_detected=True`, `negation_emphasized=True`
   - Stam "Welke stelling is niet correct?" → `negation_detected=True`, `negation_emphasized=False`
   - Stam "Welke stelling is correct?" → `negation_detected=False`
-- [ ] **T5.7** Pytest: flags generatie: een vraag met langste-antwoord-bias EN ontkenning-zonder-nadruk levert `tech_kwant_flags` met minstens 2 items
+- [x] **T5.7** Pytest: flags generatie: een vraag met langste-antwoord-bias EN ontkenning-zonder-nadruk levert `tech_kwant_flags` met minstens 2 items
 
 ---
 
