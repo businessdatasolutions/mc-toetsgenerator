@@ -11,7 +11,7 @@ from parsers.xlsx_parser import parse_xlsx
 from services.embedding_pipeline import run_embedding
 from services.generation_pipeline import run_generation
 from services.supabase_client import get_supabase_client
-from services.validation_pipeline import run_validation
+from services.validation_pipeline import run_single_validation, run_validation
 
 app = FastAPI(title="MC Toetsvalidatie Sidecar")
 
@@ -29,6 +29,7 @@ app.add_middleware(
 
 class AnalyzeRequest(BaseModel):
     exam_id: str
+    question_id: str | None = None
 
 
 class EmbedRequest(BaseModel):
@@ -49,10 +50,18 @@ async def analyze(request: AnalyzeRequest, background_tasks: BackgroundTasks):
     supabase = get_supabase_client()
     llm_client = LLMClient()
 
-    background_tasks.add_task(
-        asyncio.run,
-        run_validation(request.exam_id, supabase, llm_client),
-    )
+    if request.question_id:
+        background_tasks.add_task(
+            asyncio.run,
+            run_single_validation(
+                request.exam_id, request.question_id, supabase, llm_client
+            ),
+        )
+    else:
+        background_tasks.add_task(
+            asyncio.run,
+            run_validation(request.exam_id, supabase, llm_client),
+        )
 
     return {"status": "processing", "exam_id": request.exam_id}
 

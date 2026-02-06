@@ -1,14 +1,17 @@
-import { render, screen } from '@testing-library/react'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router'
 
-const { mockFrom } = vi.hoisted(() => ({
+const { mockFrom, mockGetSession, mockUpdate } = vi.hoisted(() => ({
   mockFrom: vi.fn(),
+  mockGetSession: vi.fn(),
+  mockUpdate: vi.fn(),
 }))
 
 vi.mock('../lib/supabase', () => ({
   supabase: {
     from: mockFrom,
+    auth: { getSession: mockGetSession },
   },
 }))
 
@@ -66,6 +69,11 @@ const mockAssessment = {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  vi.useFakeTimers({ shouldAdvanceTime: true })
+
+  mockUpdate.mockReturnValue({
+    eq: () => Promise.resolve({ error: null }),
+  })
 
   mockFrom.mockImplementation((table: string) => {
     if (table === 'questions') {
@@ -76,15 +84,22 @@ beforeEach(() => {
               Promise.resolve({ data: mockQuestion, error: null }),
           }),
         }),
+        update: mockUpdate,
       }
     }
     if (table === 'assessments') {
       return {
         select: () => ({
-          eq: () => ({
+          eq: vi.fn().mockReturnValue({
             order: () => ({
               limit: () =>
                 Promise.resolve({ data: [mockAssessment], error: null }),
+            }),
+            eq: vi.fn().mockReturnValue({
+              order: () => ({
+                limit: () =>
+                  Promise.resolve({ data: [mockAssessment], error: null }),
+              }),
             }),
           }),
         }),
@@ -98,6 +113,14 @@ beforeEach(() => {
       }),
     }
   })
+
+  mockGetSession.mockResolvedValue({
+    data: { session: { access_token: 'test-token' } },
+  })
+})
+
+afterEach(() => {
+  vi.useRealTimers()
 })
 
 function renderDetail() {
@@ -165,5 +188,123 @@ describe('QuestionDetail', () => {
     const backLink = await screen.findByText(/Terug naar dashboard/)
     expect(backLink).toBeInTheDocument()
     expect(backLink.closest('a')).toHaveAttribute('href', '/exams/exam1')
+  })
+
+  it('T9.1: "Herbeoordelen" button is visible when assessment is present', async () => {
+    renderDetail()
+    await screen.findByText('Wat is de hoofdstad van Nederland?')
+
+    expect(screen.getByText('Herbeoordelen')).toBeInTheDocument()
+  })
+
+  it('T9.2: clicking "Herbeoordelen" calls analyze endpoint with question_id', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ status: 'processing' }), { status: 200 })
+    )
+
+    renderDetail()
+    await screen.findByText('Wat is de hoofdstad van Nederland?')
+
+    fireEvent.click(screen.getByText('Herbeoordelen'))
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalledWith(
+        expect.stringContaining('/functions/v1/analyze'),
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({
+            exam_id: 'exam1',
+            question_id: 'q1',
+          }),
+        })
+      )
+    })
+
+    fetchSpy.mockRestore()
+  })
+
+  it('T9.3: loading state during reassessment (button disabled + text changes)', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ status: 'processing' }), { status: 200 })
+    )
+
+    renderDetail()
+    await screen.findByText('Wat is de hoofdstad van Nederland?')
+
+    fireEvent.click(screen.getByText('Herbeoordelen'))
+
+    await waitFor(() => {
+      expect(screen.getByText('Bezig...')).toBeInTheDocument()
+    })
+
+    const btn = screen.getByText('Bezig...')
+    expect(btn).toBeDisabled()
+
+    vi.spyOn(globalThis, 'fetch').mockRestore()
+  })
+
+  it('T9.4: error message on failed reassessment', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ error: 'Server fout' }), { status: 500 })
+    )
+
+    renderDetail()
+    await screen.findByText('Wat is de hoofdstad van Nederland?')
+
+    fireEvent.click(screen.getByText('Herbeoordelen'))
+
+    await waitFor(() => {
+      expect(screen.getByText('Server fout')).toBeInTheDocument()
+    })
+
+    vi.spyOn(globalThis, 'fetch').mockRestore()
+  })
+
+  it('T9.5: "Scores mogelijk verouderd" label when question.version > assessment.question_version', async () => {
+    // Return question with version 2 but assessment with question_version 1
+    const staleQuestion = { ...mockQuestion, version: 2 }
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'questions') {
+        return {
+          select: () => ({
+            eq: () => ({
+              single: () =>
+                Promise.resolve({ data: staleQuestion, error: null }),
+            }),
+          }),
+          update: mockUpdate,
+        }
+      }
+      if (table === 'assessments') {
+        return {
+          select: () => ({
+            eq: vi.fn().mockReturnValue({
+              order: () => ({
+                limit: () =>
+                  Promise.resolve({ data: [mockAssessment], error: null }),
+              }),
+              eq: vi.fn().mockReturnValue({
+                order: () => ({
+                  limit: () =>
+                    Promise.resolve({ data: [mockAssessment], error: null }),
+                }),
+              }),
+            }),
+          }),
+        }
+      }
+      return {
+        select: () => ({
+          eq: () => ({
+            single: () => Promise.resolve({ data: null, error: null }),
+          }),
+        }),
+      }
+    })
+
+    renderDetail()
+    await screen.findByText('Wat is de hoofdstad van Nederland?')
+
+    expect(screen.getByText(/Scores mogelijk verouderd/)).toBeInTheDocument()
   })
 })

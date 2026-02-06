@@ -93,6 +93,37 @@ async def _validate_single_question(
         ).execute()
 
 
+async def run_single_validation(
+    exam_id: str,
+    question_id: str,
+    supabase: Client,
+    llm_client: LLMClient,
+) -> None:
+    """Re-validate a single question without changing exam-level status."""
+    try:
+        response = (
+            supabase.table("questions")
+            .select("*")
+            .eq("id", question_id)
+            .single()
+            .execute()
+        )
+        question_row = response.data
+
+        if not question_row:
+            logger.warning(f"Question {question_id} not found")
+            return
+
+        semaphore = asyncio.Semaphore(1)
+        await _validate_single_question(question_row, llm_client, supabase, semaphore)
+
+    except Exception as e:
+        logger.error(
+            f"Single validation failed for question {question_id}: {e}"
+        )
+        raise
+
+
 async def run_validation(
     exam_id: str,
     supabase: Client,

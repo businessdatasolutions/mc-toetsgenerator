@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router'
 import { supabase } from '../lib/supabase'
 import type { Question, Assessment } from '../lib/types'
 import RadarChart from '../components/RadarChart'
 import ScoreBadge from '../components/ScoreBadge'
 import BloomBadge from '../components/BloomBadge'
+
+const POLL_INTERVAL = 2000
+const POLL_TIMEOUT = 60000
 
 export default function QuestionDetail() {
   const { examId, questionId } = useParams<{
@@ -22,6 +25,9 @@ export default function QuestionDetail() {
   const [expandedDimension, setExpandedDimension] = useState<string | null>(
     null
   )
+  const [reassessing, setReassessing] = useState(false)
+  const [reassessError, setReassessError] = useState<string | null>(null)
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
     if (!questionId) return
@@ -57,17 +63,107 @@ export default function QuestionDetail() {
     fetchData()
   }, [questionId])
 
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current)
+    }
+  }, [])
+
   const handleSave = async () => {
-    if (!questionId) return
+    if (!questionId || !question) return
+    const newVersion = (question.version ?? 1) + 1
     await supabase
       .from('questions')
-      .update({ stem: editStem, options: editOptions })
+      .update({ stem: editStem, options: editOptions, version: newVersion })
       .eq('id', questionId)
 
     setQuestion((prev) =>
-      prev ? { ...prev, stem: editStem, options: editOptions } : null
+      prev
+        ? { ...prev, stem: editStem, options: editOptions, version: newVersion }
+        : null
     )
     setEditing(false)
+  }
+
+  const handleReassess = async () => {
+    if (!examId || !questionId) return
+    setReassessing(true)
+    setReassessError(null)
+
+    try {
+      const { data: session } = await supabase.auth.getSession()
+      const token = session?.session?.access_token
+      if (!token) {
+        setReassessError('Niet ingelogd. Log opnieuw in.')
+        setReassessing(false)
+        return
+      }
+
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            exam_id: examId,
+            question_id: questionId,
+          }),
+        }
+      )
+
+      if (!resp.ok) {
+        const errBody = await resp.json().catch(() => ({}))
+        setReassessError(
+          errBody.error ?? 'Herbeoordeling mislukt. Probeer het opnieuw.'
+        )
+        setReassessing(false)
+        return
+      }
+
+      // Poll for the new assessment
+      const startTime = Date.now()
+      const currentVersion = question?.version ?? 1
+
+      pollRef.current = setInterval(async () => {
+        const { data: aData } = await supabase
+          .from('assessments')
+          .select('*')
+          .eq('question_id', questionId!)
+          .eq('question_version', currentVersion)
+          .order('created_at', { ascending: false })
+          .limit(1)
+
+        if (aData && aData.length > 0) {
+          const newAssessment = aData[0] as Assessment
+          // Check if this is a newer assessment than what we had
+          if (
+            !assessment ||
+            newAssessment.created_at > assessment.created_at
+          ) {
+            setAssessment(newAssessment)
+            setReassessing(false)
+            if (pollRef.current) clearInterval(pollRef.current)
+            pollRef.current = null
+          }
+        }
+
+        if (Date.now() - startTime > POLL_TIMEOUT) {
+          setReassessError(
+            'Herbeoordeling duurt te lang. Ververs de pagina later.'
+          )
+          setReassessing(false)
+          if (pollRef.current) clearInterval(pollRef.current)
+          pollRef.current = null
+        }
+      }, POLL_INTERVAL)
+    } catch {
+      setReassessError('Herbeoordeling mislukt. Probeer het opnieuw.')
+      setReassessing(false)
+    }
   }
 
   const toggleDimension = (dim: string) => {
@@ -80,6 +176,12 @@ export default function QuestionDetail() {
   const betScore = assessment?.bet_score ?? null
   const techScore = assessment?.tech_kwal_score ?? null
   const valScore = assessment?.val_score ?? null
+
+  const isStale =
+    assessment &&
+    question.version != null &&
+    assessment.question_version != null &&
+    question.version > assessment.question_version
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -94,13 +196,28 @@ export default function QuestionDetail() {
         <h1 className="text-2xl font-bold">
           Vraag {question.position + 1}
         </h1>
-        <button
-          onClick={() => setEditing(!editing)}
-          className="text-sm bg-gray-100 px-3 py-1 rounded hover:bg-gray-200"
-        >
-          {editing ? 'Annuleren' : 'Bewerk'}
-        </button>
+        <div className="flex gap-2">
+          {assessment && (
+            <button
+              onClick={handleReassess}
+              disabled={reassessing}
+              className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 disabled:opacity-50"
+            >
+              {reassessing ? 'Bezig...' : 'Herbeoordelen'}
+            </button>
+          )}
+          <button
+            onClick={() => setEditing(!editing)}
+            className="text-sm bg-gray-100 px-3 py-1 rounded hover:bg-gray-200"
+          >
+            {editing ? 'Annuleren' : 'Bewerk'}
+          </button>
+        </div>
       </div>
+
+      {reassessError && (
+        <p className="text-red-600 text-sm mb-4">{reassessError}</p>
+      )}
 
       {/* Question content */}
       <div className="mb-6 p-4 border rounded-lg">
@@ -169,6 +286,13 @@ export default function QuestionDetail() {
           </div>
         )}
       </div>
+
+      {/* Stale scores warning */}
+      {isStale && (
+        <p className="text-amber-600 text-sm mb-4 p-2 bg-amber-50 rounded">
+          Scores mogelijk verouderd — de vraag is bewerkt sinds de laatste beoordeling.
+        </p>
+      )}
 
       {/* Assessment */}
       {assessment ? (

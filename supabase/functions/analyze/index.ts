@@ -21,21 +21,26 @@ Deno.serve(async (req) => {
   }
 
   // 7.2a: Validate request body
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   let examId: string;
+  let questionId: string | undefined;
   try {
     const body = await req.json();
     examId = body.exam_id;
-    if (
-      !examId ||
-      typeof examId !== "string" ||
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        examId
-      )
-    ) {
+    if (!examId || typeof examId !== "string" || !uuidRegex.test(examId)) {
       return new Response(
         JSON.stringify({ error: "Invalid or missing exam_id (UUID required)" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+    if (body.question_id) {
+      if (typeof body.question_id !== "string" || !uuidRegex.test(body.question_id)) {
+        return new Response(
+          JSON.stringify({ error: "Invalid question_id (UUID required)" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      questionId = body.question_id;
     }
   } catch {
     return new Response(
@@ -92,31 +97,38 @@ Deno.serve(async (req) => {
     );
   }
 
-  // Get question count
-  const { count } = await supabase
-    .from("questions")
-    .select("id", { count: "exact", head: true })
-    .eq("exam_id", examId);
+  const sidecarBody: Record<string, string> = { exam_id: examId };
 
-  // 7.2d: Update status to processing
-  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  const adminClient = createClient(supabaseUrl, supabaseServiceKey);
+  // Single-question re-analysis: skip exam status changes
+  if (!questionId) {
+    // Get question count
+    const { count } = await supabase
+      .from("questions")
+      .select("id", { count: "exact", head: true })
+      .eq("exam_id", examId);
 
-  await adminClient
-    .from("exams")
-    .update({
-      analysis_status: "processing",
-      question_count: count ?? 0,
-      questions_analyzed: 0,
-    })
-    .eq("id", examId);
+    // 7.2d: Update status to processing
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const adminClient = createClient(supabaseUrl, supabaseServiceKey);
+
+    await adminClient
+      .from("exams")
+      .update({
+        analysis_status: "processing",
+        question_count: count ?? 0,
+        questions_analyzed: 0,
+      })
+      .eq("id", examId);
+  } else {
+    sidecarBody.question_id = questionId;
+  }
 
   // 7.2e: Fire-and-forget POST to sidecar
   try {
     fetch(`${SIDECAR_URL}/analyze`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ exam_id: examId }),
+      body: JSON.stringify(sidecarBody),
     });
   } catch {
     // Fire-and-forget: don't block on sidecar errors
@@ -125,9 +137,8 @@ Deno.serve(async (req) => {
   // 7.2f: Return response
   return new Response(
     JSON.stringify({
-      job_id: examId,
+      job_id: questionId ?? examId,
       status: "processing",
-      question_count: count ?? 0,
     }),
     { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
   );
