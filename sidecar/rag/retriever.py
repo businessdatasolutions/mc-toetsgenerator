@@ -1,5 +1,5 @@
 from rag.chunker import Chunk
-from rag.embedder import embed_chunks
+from rag.embedder import embed_query
 
 
 async def retrieve_chunks(
@@ -19,9 +19,8 @@ async def retrieve_chunks(
     Returns:
         List of Chunk objects sorted by similarity.
     """
-    # 13.1a: Generate embedding for the query
-    query_embeddings = await embed_chunks([query])
-    query_embedding = query_embeddings[0]
+    # 13.1a: Generate embedding for the query (with "query: " prefix)
+    query_embedding = await embed_query(query)
 
     # 13.1b: Call match_chunks RPC
     result = supabase.rpc(

@@ -45,6 +45,16 @@ Beschikbaar voor:
 - Edge cases waar Sonnet onvoldoende kwaliteit levert
 - Niet standaard ingeschakeld vanwege hogere kosten
 
+### Embedding → multilingual-e5-base (in-container)
+
+Embeddings draaien lokaal in de Python sidecar container via `sentence-transformers`:
+- **Model:** `intfloat/multilingual-e5-base` (768 dimensies)
+- **Geen externe API** — geen OpenAI dependency, geen API-kosten
+- **Multilingual** — uitstekende ondersteuning voor Nederlands
+- **E5 prefix-conventie:** documents krijgen `"passage: "` prefix, queries krijgen `"query: "` prefix
+
+**Bestand:** `sidecar/rag/embedder.py`
+
 ---
 
 ## Configuratie in Code

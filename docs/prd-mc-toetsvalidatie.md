@@ -264,7 +264,7 @@ Supabase als unified backend platform, aangevuld met een Python sidecar voor AI-
 | Auth | Supabase Auth (SAML/OIDC) | SSO-koppeling met institutionele IdP, ingebouwde user management, RLS-integratie |
 | Queue / Async | Supabase Edge Functions + pg_cron / pg_net | Database-triggers starten async processing; pg_net voor HTTP-calls naar AI-pipeline |
 | LLM Provider | Anthropic Claude API (primair) | Sterke instructie-opvolging, structured output, Nederlands |
-| Embedding | OpenAI text-embedding-3 of multilingual-e5 | Hoge kwaliteit voor Nederlandstalige tekst |
+| Embedding | multilingual-e5-base (in-container, 768 dim) | Open-source, geen externe API, goed in Nederlands |
 | Hosting | Supabase Cloud (EU-regio) of Self-hosted | EU-dataresidentie, optie voor self-hosted Supabase op eigen infra voor maximale data-soevereiniteit |
 
 ---
@@ -348,7 +348,7 @@ chunks {
   id: uuid
   material_id: uuid
   text: text
-  embedding: vector(1536)           -- pgvector, HNSW index
+  embedding: vector(768)            -- pgvector, HNSW index (multilingual-e5-base)
   page: int?
   metadata: jsonb
 }
@@ -374,7 +374,7 @@ De app combineert Supabase client SDK (directe database-queries met RLS) met cus
 ```sql
 -- Postgres function voor RAG retrieval
 create function match_chunks(
-  query_embedding vector(1536),
+  query_embedding vector(768),
   match_threshold float default 0.7,
   match_count int default 5,
   filter_material_id uuid default null
@@ -412,7 +412,7 @@ De AI-integratie combineert deterministische regels met LLM-beoordeling en RAG-g
 |------|-------|-----------|
 | Vraagvalidatie (3 dimensies) | Claude Sonnet 4.5 | Goede balans kwaliteit/kosten, sterk in structured output en Nederlandstalige instructies |
 | Vraaggerneratie | Claude Sonnet 4.5 | Creativiteit + grounding via RAG, consistent in opvolgformat |
-| Embedding (studiemateriaal) | text-embedding-3-small of multilingual-e5 | Kostenefficiënt, goed in Nederlands |
+| Embedding (studiemateriaal) | multilingual-e5-base (in-container) | Open-source, geen API-kosten, goed in Nederlands |
 | Fallback / complexe cases | Claude Opus 4.5 | Voor edge-cases die diepere analyse vereisen |
 
 ### RAG-pipeline (Module B)

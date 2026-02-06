@@ -287,7 +287,7 @@ create table chunks (
   id uuid primary key default gen_random_uuid(),
   material_id uuid not null references materials(id) on delete cascade,
   text text not null,
-  embedding vector(1536),                          -- dimensie afhankelijk van model
+  embedding vector(768),                           -- multilingual-e5-base (768 dimensies)
   page int,
   position int not null,                           -- volgorde binnen materiaal
   metadata jsonb default '{}',
@@ -374,7 +374,7 @@ create policy "Users can read chunks of own materials"
 ```sql
 -- Vector similarity search voor RAG
 create or replace function match_chunks(
-  query_embedding vector(1536),
+  query_embedding vector(768),
   match_threshold float default 0.7,
   match_count int default 5,
   filter_material_id uuid default null
@@ -803,9 +803,9 @@ def chunk_text(text: str, metadata: dict) -> list[Chunk]:
 
 async def embed_chunks(chunks: list[Chunk]) -> list[list[float]]:
     """
-    Batch-embedding via OpenAI API.
-    Model: text-embedding-3-small (1536 dimensies)
-    Batch size: 100 chunks per request
+    In-container embedding via sentence-transformers.
+    Model: intfloat/multilingual-e5-base (768 dimensies)
+    Batch size: 100 chunks per call
     """
 ```
 
@@ -1028,18 +1028,21 @@ export default defineConfig({
 
 ### 9.3 Python Sidecar
 
-| Optie | Geschikt voor |
-|-------|---------------|
-| **Fly.io** | Eenvoudige deployment, EU-regio, auto-sleep |
-| **Railway** | Zero-config Docker deploy |
-| **Cloud Run** | GCP, auto-scaling, pay-per-request |
-| **Self-hosted** | Maximale controle, data-soevereiniteit |
+**Gekozen platform:** Google Cloud Run (europe-west1)
+
+- **URL:** `https://mc-sidecar-990894571821.europe-west1.run.app`
+- **Specs:** 2 GB RAM, 2 vCPU (nodig voor in-container embedding model)
+- **Scaling:** 0–3 instances (scale-to-zero)
+- **Deploy:** `gcloud run deploy mc-sidecar --source ./sidecar --region europe-west1`
 
 Dockerfile:
 
 ```dockerfile
 FROM python:3.12-slim
 WORKDIR /app
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gcc && \
+    rm -rf /var/lib/apt/lists/*
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .

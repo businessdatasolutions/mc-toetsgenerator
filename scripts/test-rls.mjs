@@ -129,9 +129,9 @@ async function run() {
   // ===== T3.5 — match_chunks() function is callable =====
   console.log('\nT3.5 — match_chunks() is callable');
   try {
-    // Generate a dummy 1536-dimension vector string
-    const dims = Array(1536).fill('0.1').join(',');
-    const result = await admin.query(`SELECT * FROM match_chunks('[${dims}]'::vector(1536))`);
+    // Generate a dummy 768-dimension vector string
+    const dims = Array(768).fill('0.1').join(',');
+    const result = await admin.query(`SELECT * FROM match_chunks('[${dims}]'::vector(768))`);
     assert(true, `match_chunks() returned ${result.rows.length} rows (empty is OK)`);
   } catch (e) {
     assert(false, `match_chunks() failed: ${e.message}`);

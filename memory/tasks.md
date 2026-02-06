@@ -103,7 +103,7 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 - [x] **5.1** Maak de directory `sidecar/` met `main.py`, `requirements.txt`, `Dockerfile`
 - [x] **5.2** Schrijf `requirements.txt`: `fastapi`, `uvicorn[standard]`, `anthropic`, `pydantic`, `pydantic-settings`, `supabase`, `openpyxl`, `python-docx`, `pdfplumber`, `httpx`, `pytest`, `pytest-asyncio`
-- [x] **5.3** Maak `sidecar/config/settings.py`: Pydantic `Settings` class die leest uit env vars: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`
+- [x] **5.3** Maak `sidecar/config/settings.py`: Pydantic `Settings` class die leest uit env vars: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`
 - [x] **5.4** Maak `sidecar/main.py`: FastAPI app met `/health` endpoint dat `{"status": "ok"}` retourneert
 - [x] **5.5** Maak `sidecar/analyzers/schemas.py`: `DeterministicResult` dataclass met alle `tech_kwant_*` velden (zie TDD sectie 5.2)
 - [x] **5.6** Maak `sidecar/analyzers/deterministic.py` met functie `analyze(question) -> DeterministicResult`:
@@ -279,15 +279,15 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 ### 11. GitHub Pages Deployment
 
 - [x] **11.1** Maak `.github/workflows/deploy.yml` met de GitHub Actions workflow (zie TDD sectie 9.1): checkout, setup node 22, npm ci, npm run build met env vars uit secrets, upload pages artifact, deploy to pages
-- [ ] **11.2** Configureer GitHub repository settings: enable GitHub Pages met "GitHub Actions" als source (NOTE: vereist publieke repo of GitHub Pro plan)
+- [x] **11.2** Configureer GitHub repository settings: enable GitHub Pages met "GitHub Actions" als source
 - [x] **11.3** Voeg `VITE_SUPABASE_URL` en `VITE_SUPABASE_ANON_KEY` toe als repository secrets in GitHub
 - [x] **11.4** Maak een initial commit en push naar `main`
 
 #### Tests taak 11
 
-- [ ] **T11.1** GitHub Actions workflow runt succesvol: build stap slaagt, deploy stap slaagt (NOTE: wacht op Pages enablement)
-- [ ] **T11.2** De site is bereikbaar op `https://<username>.github.io/mc-toetsgenerator/`
-- [ ] **T11.3** SPA routing werkt: navigeer direct naar `https://<username>.github.io/mc-toetsgenerator/exams/upload` → de Upload pagina wordt getoond (niet een 404)
+- [x] **T11.1** GitHub Actions workflow runt succesvol: build stap slaagt, deploy stap slaagt
+- [x] **T11.2** De site is bereikbaar op `https://businessdatasolutions.github.io/mc-toetsgenerator/`
+- [ ] **T11.3** SPA routing werkt: navigeer direct naar `https://businessdatasolutions.github.io/mc-toetsgenerator/exams/upload` → de Upload pagina wordt getoond (niet een 404)
 - [ ] **T11.4** Supabase connectie werkt: de login-pagina kan communiceren met Supabase Auth
 
 ---
@@ -305,9 +305,9 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
   - **12.2b** Respecteer paragraafgrenzen: splits bij voorkeur op dubbele newlines
   - **12.2c** Elk chunk-object bevat: `text`, `page` (indien beschikbaar), `position` (index), `metadata`
 - [x] **12.3** Maak `sidecar/rag/embedder.py` met `embed_chunks(chunks) -> list[list[float]]`:
-  - **12.3a** Gebruik OpenAI API (`text-embedding-3-small` model)
-  - **12.3b** Batch chunks in groepen van 100 per API request
-  - **12.3c** Retourneer lijst van 1536-dimensionale float vectors
+  - **12.3a** Gebruik `intfloat/multilingual-e5-base` via sentence-transformers (in-container, geen API)
+  - **12.3b** Batch chunks in groepen van 100 per encode call
+  - **12.3c** Retourneer lijst van 768-dimensionale float vectors
 - [x] **12.4** Maak `sidecar/services/embedding_pipeline.py` met `run_embedding(material_id)`:
   - **12.4a** Download bestand uit Supabase Storage via service role client
   - **12.4b** Extraheer tekst (dispatch op mime type)
@@ -323,15 +323,15 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 - [x] **T12.2** Pytest `extract_docx`: parse een test DOCX, verifieer dat alle paragrafen in de output staan
 - [x] **T12.3** Pytest `chunk_text`: input van 2000 woorden → verifieer dat er meerdere chunks zijn, elk ≤600 tokens (~2400 karakters), met overlap (laatste 50 tokens van chunk N = eerste 50 tokens van chunk N+1)
 - [x] **T12.4** Pytest `chunk_text`: korte input van 100 woorden → verifieer dat er precies 1 chunk is
-- [x] **T12.5** Pytest `embed_chunks` (mock OpenAI API): verifieer dat de functie batches van max 100 stuurt en vectors van 1536 dimensies retourneert
-- [x] **T12.6** Integratietest `embedding_pipeline` (mock Supabase + mock OpenAI): verifieer dat de volledige flow draait: download → extract → chunk → embed → insert chunks → update material
+- [x] **T12.5** Pytest `embed_chunks` (mock sentence-transformers model): verifieer dat de functie vectors van 768 dimensies retourneert
+- [x] **T12.6** Integratietest `embedding_pipeline` (mock Supabase + mock embedder): verifieer dat de volledige flow draait: download → extract → chunk → embed → insert chunks → update material
 
 ---
 
 ### 13. RAG Retrieval & Vraaggerneratie
 
 - [x] **13.1** Maak `sidecar/rag/retriever.py` met `retrieve_chunks(query, material_id, top_k=5) -> list[Chunk]`:
-  - **13.1a** Genereer embedding voor de query tekst via OpenAI
+  - **13.1a** Genereer embedding voor de query tekst via `embed_query()` (met "query: " prefix)
   - **13.1b** Roep Supabase RPC `match_chunks()` aan met de query embedding en material_id filter
   - **13.1c** Retourneer top-k chunks gesorteerd op similarity
 - [x] **13.2** Maak `sidecar/llm/prompts/generation.py`:
@@ -354,7 +354,7 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 #### Tests taak 13
 
-- [x] **T13.1** Pytest `retrieve_chunks` (mock OpenAI + mock Supabase RPC): verifieer dat een query leidt tot een embedding call en een `match_chunks` RPC call met correcte parameters
+- [x] **T13.1** Pytest `retrieve_chunks` (mock embedder + mock Supabase RPC): verifieer dat een query leidt tot een embedding call en een `match_chunks` RPC call met correcte parameters
 - [x] **T13.2** Pytest `build_generation_prompt`: verifieer dat output system prompt, `<specification>` tag, `<source_material>` met chunk tags, en `<quality_rules>` bevat
 - [x] **T13.3** Integratietest (vereist `ANTHROPIC_API_KEY`): roep `llm_client.generate_questions()` aan met 2 dummy chunks en specificatie voor 2 vragen op Bloom-niveau "toepassen". Verifieer dat resultaat 2 `GeneratedQuestion` objecten bevat met alle velden gevuld en `source_chunk_ids` die verwijzen naar de meegegeven chunks
 - [x] **T13.4** Pytest `generation_pipeline` (mock alles): verifieer de volledige flow: lees job → retrieve chunks → generate → insert questions → run validation → update job
@@ -401,12 +401,12 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 - [x] **15.2** Maak `sidecar/.env.example` met alle vereiste env vars
 - [x] **15.3** Test Docker build: `docker build -t mc-sidecar ./sidecar` (vereist Docker installatie)
 - [x] **15.4** Test Docker run: `docker run -p 8000:8000 --env-file .env mc-sidecar` → healthcheck werkt
-- [ ] **15.5** Deploy naar gekozen platform (Fly.io / Railway / Cloud Run) — configureer env vars daar
-- [ ] **15.6** Update Supabase Edge Functions met de productie sidecar URL als secret
+- [x] **15.5** Deploy naar Google Cloud Run (europe-west1) — env vars geconfigureerd, 2GB RAM / 2 vCPU voor in-container embedding model
+- [x] **15.6** Update Supabase Edge Functions met de productie sidecar URL als secret (`SIDECAR_URL`)
 
 #### Tests taak 15
 
 - [x] **T15.1** `docker build` slaagt zonder errors (vereist Docker)
 - [x] **T15.2** Container draait en `/health` retourneert `{"status": "ok"}` (vereist Docker)
-- [ ] **T15.3** Productie sidecar is bereikbaar: `curl https://<sidecar-url>/health` retourneert 200
+- [x] **T15.3** Productie sidecar is bereikbaar: `curl https://mc-sidecar-990894571821.europe-west1.run.app/health` retourneert 200
 - [ ] **T15.4** End-to-end: trigger analyse via de live site → sidecar verwerkt de vragen → resultaten verschijnen in het dashboard

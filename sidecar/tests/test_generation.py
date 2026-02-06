@@ -37,10 +37,10 @@ class TestRetrieveChunks:
         )
 
         with patch(
-            "rag.retriever.embed_chunks",
+            "rag.retriever.embed_query",
             new_callable=AsyncMock,
         ) as mock_embed:
-            mock_embed.return_value = [[0.1] * 1536]
+            mock_embed.return_value = [0.1] * 768
 
             chunks = await retrieve_chunks(
                 query="Leerdoel over toetsing",
@@ -50,13 +50,13 @@ class TestRetrieveChunks:
             )
 
         # Embedding was called with the query
-        mock_embed.assert_called_once_with(["Leerdoel over toetsing"])
+        mock_embed.assert_called_once_with("Leerdoel over toetsing")
 
         # RPC was called with correct parameters
         mock_supabase.rpc.assert_called_once_with(
             "match_chunks",
             {
-                "query_embedding": [0.1] * 1536,
+                "query_embedding": [0.1] * 768,
                 "match_count": 5,
                 "filter_material_id": "mat-1",
             },
@@ -79,10 +79,10 @@ class TestRetrieveChunks:
         mock_supabase.rpc.return_value.execute.return_value = MagicMock(data=[])
 
         with patch(
-            "rag.retriever.embed_chunks",
+            "rag.retriever.embed_query",
             new_callable=AsyncMock,
         ) as mock_embed:
-            mock_embed.return_value = [[0.1] * 1536]
+            mock_embed.return_value = [0.1] * 768
 
             chunks = await retrieve_chunks(
                 query="Onbekend onderwerp",

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-MC Toetsvalidatie & Generatie Platform — an AI-powered web application for Dutch higher education that validates and generates multiple-choice exam questions. The project is currently in the **PRD/specification phase** with no application code yet. All implementation should follow the PRD at `docs/prd-mc-toetsvalidatie.md`.
+MC Toetsvalidatie & Generatie Platform — an AI-powered web application for Dutch higher education that validates and generates multiple-choice exam questions. All implementation follows the PRD at `docs/prd-mc-toetsvalidatie.md`.
 
 **Two modules:**
 - **Module A (Validation):** Upload MC questions → deterministic + LLM analysis on 3 quality dimensions → dashboard with improvement suggestions → export
@@ -22,7 +22,7 @@ MC Toetsvalidatie & Generatie Platform — an AI-powered web application for Dut
 
 The three criteria files are the **single source of truth** for quality assessment and are meant to be embedded directly into LLM prompts.
 
-## Planned Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
@@ -30,12 +30,12 @@ The three criteria files are the **single source of truth** for quality assessme
 | Backend API | Supabase Edge Functions |
 | AI Processing | Python sidecar (FastAPI) for LLM orchestration and deterministic analysis |
 | Database | Supabase PostgreSQL with pgvector extension |
-| Vector Store | pgvector for RAG embeddings |
+| Vector Store | pgvector for RAG embeddings (768 dimensions) |
 | File Storage | Supabase Storage (S3-compatible) |
 | Auth | Supabase Auth (SAML/OIDC SSO) |
 | LLM | Anthropic Claude API (Haiku 4.5 for validation, Sonnet 4.5 for generation) |
-| Embeddings | OpenAI text-embedding-3-small or multilingual-e5 |
-| Deployment | Frontend on GitHub Pages; Supabase Cloud (EU region) or self-hosted for backend |
+| Embeddings | `intfloat/multilingual-e5-base` via sentence-transformers (in-container, no external API) |
+| Deployment | Frontend on GitHub Pages; Supabase Cloud (EU/Ireland); Python sidecar on Google Cloud Run (europe-west1) |
 
 ## Architecture
 

@@ -9,5 +9,8 @@ python-docx
 pdfplumber
 httpx
 python-multipart
+sentence-transformers
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
 pytest
 pytest-asyncio

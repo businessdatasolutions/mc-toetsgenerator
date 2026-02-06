@@ -99,51 +99,30 @@ class TestChunkText:
         assert len(page2_chunks) > 0
 
 
-# ── T12.5: embed_chunks (mock OpenAI API) ────────────────────────────────────
+# ── T12.5: embed_chunks (multilingual-e5-base in-container) ──────────────────
 
 class TestEmbedChunks:
     @pytest.mark.asyncio
-    async def test_batches_and_returns_vectors(self):
-        """T12.5: Verify batching of max 100 and 1536-dimensional vectors."""
-        from rag.embedder import embed_chunks, BATCH_SIZE
+    async def test_returns_correct_dimensions(self):
+        """T12.5: Verify embed_chunks returns 768-dimensional vectors."""
+        import numpy as np
 
-        # Create 150 texts to test batching
-        texts = [f"Text chunk {i}" for i in range(150)]
+        from rag.embedder import EMBEDDING_DIMENSIONS, embed_chunks
 
-        fake_embeddings = [[0.1] * 1536 for _ in range(min(100, len(texts)))]
-        fake_response = {
-            "data": [{"embedding": emb} for emb in fake_embeddings]
-        }
+        # Mock the SentenceTransformer model
+        mock_model = MagicMock()
 
-        call_count = 0
+        def fake_encode(texts, **kwargs):
+            return np.random.rand(len(texts), 768).astype(np.float32)
 
-        async def mock_post(url, **kwargs):
-            nonlocal call_count
-            call_count += 1
-            batch = kwargs.get("json", {}).get("input", [])
-            batch_embeddings = [[0.1] * 1536 for _ in batch]
-            mock_resp = MagicMock()
-            mock_resp.raise_for_status = MagicMock()
-            mock_resp.json.return_value = {
-                "data": [{"embedding": emb} for emb in batch_embeddings]
-            }
-            return mock_resp
+        mock_model.encode = fake_encode
 
-        with patch("rag.embedder.httpx.AsyncClient") as MockClient:
-            mock_client = AsyncMock()
-            mock_client.post = mock_post
-            mock_client.__aenter__ = AsyncMock(return_value=mock_client)
-            mock_client.__aexit__ = AsyncMock(return_value=False)
-            MockClient.return_value = mock_client
+        with patch("rag.embedder._get_model", return_value=mock_model):
+            result = await embed_chunks(["Text chunk 1", "Text chunk 2"])
 
-            result = await embed_chunks(texts)
-
-        # Should have made 2 batches (100 + 50)
-        assert call_count == 2
-        # Should return 150 embeddings
-        assert len(result) == 150
-        # Each embedding should be 1536 dimensions
-        assert all(len(v) == 1536 for v in result)
+        assert len(result) == 2
+        assert all(len(v) == EMBEDDING_DIMENSIONS for v in result)
+        assert EMBEDDING_DIMENSIONS == 768
 
 
 # ── T12.6: embedding_pipeline integration (mock Supabase + OpenAI) ────────────
@@ -190,7 +169,7 @@ class TestEmbeddingPipeline:
             "services.embedding_pipeline.embed_chunks",
             new_callable=AsyncMock,
         ) as mock_embed:
-            mock_embed.return_value = [[0.1] * 1536]  # One chunk for short text
+            mock_embed.return_value = [[0.1] * 768]  # One chunk for short text
 
             await run_embedding("mat-1")
 
