@@ -272,7 +272,7 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 - [x] **T10.1** React test `Export`: render component, klik op "CSV" knop, verifieer dat `exportExam()` aangeroepen wordt met format "csv"
 - [x] **T10.2** Edge Function test: roep export aan met format=csv voor een exam met 3 vragen, verifieer dat CSV output 4 regels bevat (1 header + 3 vragen) en alle score-kolommen aanwezig zijn
-- [ ] **T10.3** Edge Function test: roep export aan met format=markdown, verifieer dat output geldige Markdown is met `#` headers en een tabel
+- [x] **T10.3** Edge Function test: roep export aan met format=markdown, verifieer dat output geldige Markdown is met `#` headers en een tabel
 
 ---
 
