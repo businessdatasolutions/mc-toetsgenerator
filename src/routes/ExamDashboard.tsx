@@ -23,9 +23,9 @@ export default function ExamDashboard() {
   const [filterBloom, setFilterBloom] = useState<BloomLevel | ''>('')
   const [sortBy, setSortBy] = useState<'position' | 'bet' | 'tech' | 'val'>('position')
 
-  // Fetch score summary via RPC
+  // Fetch score summary via RPC (only when analysis is done)
   useEffect(() => {
-    if (!examId) return
+    if (!examId || exam?.analysis_status !== 'completed') return
     async function fetchSummary() {
       const { data } = await supabase.rpc('exam_score_summary', {
         p_exam_id: examId!,
