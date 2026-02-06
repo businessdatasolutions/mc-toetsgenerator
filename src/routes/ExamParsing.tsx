@@ -123,6 +123,7 @@ export default function ExamParsing() {
         exam_id: examId,
         stem: q.stem,
         options: q.options,
+        correct_option: q.options.findIndex((o) => o.is_correct),
         position: i,
         version: 1,
       }))

@@ -17,6 +17,8 @@ MC Toetsvalidatie & Generatie Platform — an AI-powered web application for Dut
 - `docs/criteria-technisch.md` — Technical quality criteria (stem clarity, distractor plausibility, deterministic flags; scored 1-5)
 - `docs/criteria-validiteit.md` — Validity criteria (Bloom's cognitive level, learning objective alignment; scored 1-5)
 - `docs/Blooms-taxonomy-for-learning-objectives-TU-Delft-Sep-2019.pdf` — Bloom's taxonomy reference
+- `docs/llm-configuratie.md` — LLM model selection, pricing, and configuration details
+- `docs/llm-models-overview.md` — Comprehensive comparison of Anthropic Claude vs Google Gemini models
 
 The three criteria files are the **single source of truth** for quality assessment and are meant to be embedded directly into LLM prompts.
 
@@ -31,7 +33,7 @@ The three criteria files are the **single source of truth** for quality assessme
 | Vector Store | pgvector for RAG embeddings |
 | File Storage | Supabase Storage (S3-compatible) |
 | Auth | Supabase Auth (SAML/OIDC SSO) |
-| LLM | Anthropic Claude API (Sonnet 4.5 primary, Opus 4.5 for edge cases) |
+| LLM | Anthropic Claude API (Haiku 4.5 for validation, Sonnet 4.5 for generation) |
 | Embeddings | OpenAI text-embedding-3-small or multilingual-e5 |
 | Deployment | Frontend on GitHub Pages; Supabase Cloud (EU region) or self-hosted for backend |
 

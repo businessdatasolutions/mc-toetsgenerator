@@ -21,12 +21,16 @@ export default function ExamUpload() {
 
     try {
       // 8.2c: Create exam record
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Niet ingelogd')
+
       const { data: exam, error: examError } = await supabase
         .from('exams')
         .insert({
           title,
-          subject: subject || null,
-          learning_objectives: learningObjectives
+          course: subject || null,
+          created_by: user.id,
+          learning_goals: learningObjectives
             ? learningObjectives.split(',').map((s) => s.trim())
             : [],
         })

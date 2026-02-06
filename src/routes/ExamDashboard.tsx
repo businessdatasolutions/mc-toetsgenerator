@@ -10,9 +10,9 @@ import QuestionCard from '../components/QuestionCard'
 import ScoreBadge from '../components/ScoreBadge'
 
 interface ScoreSummary {
-  avg_bet: number | null
-  avg_tech: number | null
-  avg_val: number | null
+  avg_bet_score: number | null
+  avg_tech_score: number | null
+  avg_val_score: number | null
 }
 
 export default function ExamDashboard() {
@@ -128,13 +128,14 @@ export default function ExamDashboard() {
       {/* KPI Cards */}
       {summary && (
         <div className="grid grid-cols-3 gap-4 mb-6">
+          <p className="col-span-3 text-xs text-gray-400 text-right">Gemiddelde score (schaal 1-5)</p>
           <div className="p-4 border rounded-lg text-center">
             <p className="text-sm text-gray-500 mb-1">Betrouwbaarheid</p>
             <div className="flex justify-center">
               <ScoreBadge
                 score={
-                  summary.avg_bet !== null
-                    ? Math.round(summary.avg_bet * 10) / 10
+                  summary.avg_bet_score !== null
+                    ? Math.round(summary.avg_bet_score * 10) / 10
                     : null
                 }
               />
@@ -145,8 +146,8 @@ export default function ExamDashboard() {
             <div className="flex justify-center">
               <ScoreBadge
                 score={
-                  summary.avg_tech !== null
-                    ? Math.round(summary.avg_tech * 10) / 10
+                  summary.avg_tech_score !== null
+                    ? Math.round(summary.avg_tech_score * 10) / 10
                     : null
                 }
               />
@@ -157,8 +158,8 @@ export default function ExamDashboard() {
             <div className="flex justify-center">
               <ScoreBadge
                 score={
-                  summary.avg_val !== null
-                    ? Math.round(summary.avg_val * 10) / 10
+                  summary.avg_val_score !== null
+                    ? Math.round(summary.avg_val_score * 10) / 10
                     : null
                 }
               />

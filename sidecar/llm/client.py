@@ -15,8 +15,9 @@ class LLMValidationError(Exception):
 class LLMClient:
     """Client for Claude API calls with structured output."""
 
-    MODEL_SONNET = "claude-sonnet-4-5-20241022"
-    MODEL_OPUS = "claude-opus-4-5-20250514"
+    MODEL_HAIKU = "claude-haiku-4-5-20251001"
+    MODEL_SONNET = "claude-sonnet-4-5-20250929"
+    MODEL_OPUS = "claude-opus-4-6"
 
     def __init__(self, api_key: str | None = None):
         self.client = anthropic.Anthropic(
@@ -34,7 +35,7 @@ class LLMClient:
         Args:
             question: Dict with stem, options, correct answer, learning objective.
             deterministic_results: Dict with tech_kwant_* fields from deterministic analyzer.
-            model: Model to use (defaults to Sonnet).
+            model: Model to use (defaults to Haiku for cost efficiency).
 
         Returns:
             ValidationResult with all three dimension scores and suggestions.
@@ -47,7 +48,7 @@ class LLMClient:
         user_msg = messages[1]["content"]
 
         response = self.client.messages.create(
-            model=model or self.MODEL_SONNET,
+            model=model or self.MODEL_HAIKU,
             max_tokens=2048,
             temperature=0.0,
             system=system_msg,

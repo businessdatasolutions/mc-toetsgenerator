@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>llm-models-overview</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="llm-models-overview_files/libs/clipboard/clipboard.min.js"></script>
+<script src="llm-models-overview_files/libs/quarto-html/quarto.js"></script>
+<script src="llm-models-overview_files/libs/quarto-html/popper.min.js"></script>
+<script src="llm-models-overview_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="llm-models-overview_files/libs/quarto-html/anchor.min.js"></script>
+<link href="llm-models-overview_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="llm-models-overview_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="llm-models-overview_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="llm-models-overview_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="llm-models-overview_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+
+
+
+<section id="uitgebreid-overzicht-anthropic-claude-vs-google-gemini-api-modellen" class="level1">
+<h1>Uitgebreid Overzicht: Anthropic Claude vs Google Gemini API Modellen</h1>
+<p><strong>Bijgewerkt: Februari 2026</strong></p>
+<hr>
+<section id="anthropic-claude-api-modellen" class="level2">
+<h2 class="anchored" data-anchor-id="anthropic-claude-api-modellen">1. ANTHROPIC CLAUDE API MODELLEN</h2>
+<section id="a.-claude-opus-4.5-meest-capable" class="level3">
+<h3 class="anchored" data-anchor-id="a.-claude-opus-4.5-meest-capable">A. Claude Opus 4.5 (Meest Capable)</h3>
+<p><strong>Prijzen (per miljoen tokens):</strong> - Input: $5.00 - Output: $25.00 - Batch API (50% korting): Input $2.50 / Output $12.50</p>
+<p><strong>Beschrijving:</strong> Claude Opus 4.5 is Anthropic’s meest geavanceerde model (november 2025 uitgebracht). Dit is de huidige state-of-the-art voor commerciële toepassingen.</p>
+<p><strong>Prestaties &amp; Toepassingen:</strong> - State-of-the-art reasoning en planning - Uitstekend voor complexe software engineering (SWE-bench Verified scores matchen Sonnet 4.5 met 76% minder tokens) - Sterke agentic capabilities (multi-agent orchestratie) - Optimaal voor: Autonome code refactoring, enterprise-klasse analyse, juridische/financiële document analysis, complexe multi-stap workflows - 1M token context window ondersteuning - Extended thinking ondersteund (denk tokens worden als output tokens gefactureerd)</p>
+<p><strong>Voordelen boven vorige generatie:</strong> - 67% goedkoper dan Opus 4.1 ($15/$75 → $5/$25) - Beter bij coding dan GPT-4o en Claude Sonnet 4.5 - Efficiëntere token-consumptie</p>
+<p><strong>Vergelijkbare Google Gemini model:</strong> Gemini 3 Pro Preview ($2-4 input / $12-18 output, afhankelijk van context)</p>
+<hr>
+</section>
+<section id="b.-claude-sonnet-4.5-balanced" class="level3">
+<h3 class="anchored" data-anchor-id="b.-claude-sonnet-4.5-balanced">B. Claude Sonnet 4.5 (Balanced)</h3>
+<p><strong>Prijzen (per miljoen tokens):</strong> - Normaal context (≤200K tokens): Input $3.00 / Output $15.00 - Long context (&gt;200K tokens): Input $6.00 / Output $22.50 - Batch API: 50% korting toepassen</p>
+<p><strong>Beschrijving:</strong> De optimale keuze voor meeste productie-applicaties. Balans tussen prestatie en kosten.</p>
+<p><strong>Prestaties &amp; Toepassingen:</strong> - Sterke reasoning, coding en betrouwbaarheid - Geschikt voor: Customer support, code completion, documentanalyse, content generatie - 1M token context window (mid-2025 geïntroduceerd) - Extended thinking ondersteund - Bijna frontier-level performance op veel benchmarks - Sneller dan Opus met redelijke quality trade-off</p>
+<p><strong>Voordelen:</strong> - Beste prijs/prestatie ratio voor meeste use cases - Geschikt voor SaaS workflows - Betrouwbare agentic performance</p>
+<p><strong>Vergelijkbare Google Gemini model:</strong> Gemini 2.5 Pro ($1.25 input / $10 output normaal context; $2.50 input / $15 output &gt;200K)</p>
+<hr>
+</section>
+<section id="c.-claude-haiku-4.5-fast-cost-effective" class="level3">
+<h3 class="anchored" data-anchor-id="c.-claude-haiku-4.5-fast-cost-effective">C. Claude Haiku 4.5 (Fast &amp; Cost-Effective)</h3>
+<p><strong>Prijzen (per miljoen tokens):</strong> - Input: $1.00 - Output: $5.00 - Batch API: $0.50 input / $2.50 output</p>
+<p><strong>Beschrijving:</strong> Kleinste en snelste model. Optimized voor ultra-lage latency en hoge doorvoer.</p>
+<p><strong>Prestaties &amp; Toepassingen:</strong> - Near-frontier coding performance ondanks compacte size - Structured reasoning ook op klein schaal - Geschikt voor: Classificatie, real-time categorisatie, lightweight summarization, in-product micro-interactions, hoge-volume taken - 200K token context window - Extended thinking ondersteund</p>
+<p><strong>Voordelen:</strong> - Meest betaalbare optie voor bulk workloads - Snelle response times - Kleine footprint</p>
+<p><strong>Vergelijkbare Google Gemini model:</strong> Gemini 2.5 Flash-Lite ($0.10 input / $0.40 output) of Gemini 2.5 Flash ($0.15-0.30 input / $0.60-2.40 output)</p>
+<hr>
+</section>
+<section id="oudere-claude-modellen-nog-beschikbaar-maar-niet-aanbevolen" class="level3">
+<h3 class="anchored" data-anchor-id="oudere-claude-modellen-nog-beschikbaar-maar-niet-aanbevolen">Oudere Claude Modellen (nog beschikbaar maar niet aanbevolen)</h3>
+<ul>
+<li><strong>Claude Opus 4.1</strong>: $15 input / $75 output (vorige generatie, nu vervangen door Opus 4.5)</li>
+<li><strong>Claude Sonnet 4.0</strong>: $3 input / $15 output (nog steeds beschikbaar, minder capabel dan 4.5)</li>
+<li><strong>Claude Haiku 3.5</strong>: $0.80 input / $4 output (oudere versie)</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="google-gemini-api-modellen" class="level2">
+<h2 class="anchored" data-anchor-id="google-gemini-api-modellen">2. GOOGLE GEMINI API MODELLEN</h2>
+<section id="a.-gemini-3-pro-preview-nieuwste-meest-capable" class="level3">
+<h3 class="anchored" data-anchor-id="a.-gemini-3-pro-preview-nieuwste-meest-capable">A. Gemini 3 Pro Preview (Nieuwste, Meest Capable)</h3>
+<p><strong>Prijzen (per miljoen tokens):</strong> - Context-dependent tiering (varieert per use case) - Standaard: $2.00 input / $12.00 output - Long context (&gt;200K): $4.00 input / $18.00 output - Batch API: 50% korting</p>
+<p><strong>Beschrijving:</strong> Google’s nieuwste generatie (late 2025 uitgebracht). Significant meer intelligent dan vorige generaties met 80%+ betere reasoning.</p>
+<p><strong>Prestaties &amp; Toepassingen:</strong> - Cutting-edge multimodaal (tekst, afbeeldingen, video, audio) - 1M token context window - Denken/reasoning modussen beschikbaar - Geschikt voor: Complexe analyse, code generation, video analysis, advanced reasoning taken - Sterke agentic capabilities - Google Search grounding beschikbaar (1.500 vrije grounded requests per dag, daarna $35/1000)</p>
+<p><strong>Voordelen:</strong> - Snellere processing dan vorige generaties - Betere multimodal understanding - Naadloze Google Cloud integratie</p>
+<p><strong>Vergelijkbare Anthropic model:</strong> Claude Opus 4.5 (voor pure reasoning), Claude Sonnet 4.5 (voor balanced approach)</p>
+<hr>
+</section>
+<section id="b.-gemini-2.5-pro-productie-klaar" class="level3">
+<h3 class="anchored" data-anchor-id="b.-gemini-2.5-pro-productie-klaar">B. Gemini 2.5 Pro (Productie-klaar)</h3>
+<p><strong>Prijzen (per miljoen tokens):</strong> - Normaal context (≤200K): $1.25 input / $10.00 output - Long context (&gt;200K): $2.50 input / $15.00 output - Batch API: $0.625 input / $5.00 output (50% off)</p>
+<p><strong>Beschrijving:</strong> Meest gebruikte enterprise model. Sterke allround performer met focus op coding en reasoning.</p>
+<p><strong>Prestaties &amp; Toepassingen:</strong> - Uitstekend voor coding taken - Sterke reasoning met thinking budget support - 1M token context window - Geschikt voor: Code analysis, document processing, complex reasoning, enterprise workflows - Computer Use model beschikbaar (voor browser automation) - Image generation via Imagen integratie</p>
+<p><strong>Voordelen:</strong> - Proven production stability - Broad capability spectrum - Goed voor mixed workloads</p>
+<p><strong>Vergelijkbare Anthropic model:</strong> Claude Sonnet 4.5</p>
+<hr>
+</section>
+<section id="c.-gemini-2.5-flash-balanced-speedquality" class="level3">
+<h3 class="anchored" data-anchor-id="c.-gemini-2.5-flash-balanced-speedquality">C. Gemini 2.5 Flash (Balanced Speed/Quality)</h3>
+<p><strong>Prijzen (per miljoen tokens):</strong> - Zonder reasoning: $0.60 input / $3.50 output - Met reasoning: $0.75 input / $3.00 output - Batch API: 50% korting</p>
+<p><strong>Beschrijving:</strong> Snellere variant met good-enough kwaliteit voor meeste use cases.</p>
+<p><strong>Prestaties &amp; Toepassingen:</strong> - Large-scale processing - Low-latency agentic tasks - Reasoning beschikbaar (met trade-off) - Geschikt voor: Real-time assistants, bulk processing, cost-sensitive workloads - 1M token context window</p>
+<p><strong>Voordeel:</strong> - Snellere responses dan Pro - Betere kostenefficiëntie - Denken budget ondersteuning</p>
+<p><strong>Vergelijkbare Anthropic model:</strong> Claude Haiku 4.5 (voor ultra-lage kosten) tot Claude Sonnet 4.5 (afhankelijk van use case)</p>
+<hr>
+</section>
+<section id="d.-gemini-2.5-flash-lite-ultra-cost-effective" class="level3">
+<h3 class="anchored" data-anchor-id="d.-gemini-2.5-flash-lite-ultra-cost-effective">D. Gemini 2.5 Flash-Lite (Ultra Cost-Effective)</h3>
+<p><strong>Prijzen (per miljoen tokens):</strong> - Input: $0.10 - Output: $0.40 - Batch API: $0.05 input / $0.20 output</p>
+<p><strong>Beschrijving:</strong> Goedkoopste optie voor bulk processing. Kleinste model maar nog steeds capabel.</p>
+<p><strong>Prestaties &amp; Toepassingen:</strong> - Lightweight classificatie en summarization - High-throughput workloads - Geschikt voor: Filtering, tagging, simple summarization, repetitive tasks - Compact form factor</p>
+<p><strong>Voordelen:</strong> - Laagste kosten - Snel, efficient - Geschikt voor high-volume</p>
+<p><strong>Vergelijkbare Anthropic model:</strong> Claude Haiku 4.5 ($1 input / $5 output - Google’s versie is nog goedkoper)</p>
+<hr>
+</section>
+<section id="e.-gemini-2.0-flash-vorige-generatie" class="level3">
+<h3 class="anchored" data-anchor-id="e.-gemini-2.0-flash-vorige-generatie">E. Gemini 2.0 Flash (Vorige Generatie)</h3>
+<p><strong>Prijzen:</strong> - Flash: $0.075 input / $0.30 output - Flash-Lite: $0.075 input / $0.30 output</p>
+<p>Nog steeds beschikbaar maar vervangen door 2.5-serie. Lagere kosten dan 2.5, maar minder capabel.</p>
+<hr>
+</section>
+</section>
+<section id="prijsvergelijking-tabel-met-model-reference-names" class="level2">
+<h2 class="anchored" data-anchor-id="prijsvergelijking-tabel-met-model-reference-names">3. PRIJSVERGELIJKING TABEL MET MODEL REFERENCE NAMES</h2>
+<section id="tabel-3a-volledige-overzicht" class="level3">
+<h3 class="anchored" data-anchor-id="tabel-3a-volledige-overzicht">Tabel 3A: Volledige Overzicht</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 20%">
+<col style="width: 18%">
+<col style="width: 20%">
+<col style="width: 15%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>API Model ID</th>
+<th>Input Prijs</th>
+<th>Output Prijs</th>
+<th>Use Case</th>
+<th>Context</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>ANTHROPIC CLAUDE</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Opus 4.5</td>
+<td><code>claude-opus-4-5-20251101</code></td>
+<td>$5.00</td>
+<td>$25.00</td>
+<td>Complex reasoning, coding</td>
+<td>1M</td>
+</tr>
+<tr class="odd">
+<td>Sonnet 4.5</td>
+<td><code>claude-sonnet-4-5-20250929</code></td>
+<td>$3.00*</td>
+<td>$15.00*</td>
+<td>Balanced production</td>
+<td>1M</td>
+</tr>
+<tr class="even">
+<td>Haiku 4.5</td>
+<td><code>claude-haiku-4-5-20251001</code></td>
+<td>$1.00</td>
+<td>$5.00</td>
+<td>High-volume, simple</td>
+<td>200K</td>
+</tr>
+<tr class="odd">
+<td>Opus 4.1</td>
+<td><code>claude-opus-4-1-20250805</code></td>
+<td>$15.00</td>
+<td>$75.00</td>
+<td>Legacy (niet aanbevolen)</td>
+<td>200K</td>
+</tr>
+<tr class="even">
+<td>Sonnet 4</td>
+<td><code>claude-sonnet-4-20250514</code></td>
+<td>$3.00</td>
+<td>$15.00</td>
+<td>Legacy (niet aanbevolen)</td>
+<td>200K</td>
+</tr>
+<tr class="odd">
+<td><strong>GOOGLE GEMINI</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>3 Pro Preview</td>
+<td><code>gemini-3-pro-preview</code></td>
+<td>$2.00*</td>
+<td>$12.00*</td>
+<td>Cutting-edge tasks</td>
+<td>1M</td>
+</tr>
+<tr class="odd">
+<td>2.5 Pro</td>
+<td><code>gemini-2.5-pro</code></td>
+<td>$1.25*</td>
+<td>$10.00*</td>
+<td>Production coding</td>
+<td>1M</td>
+</tr>
+<tr class="even">
+<td>2.5 Flash</td>
+<td><code>gemini-2.5-flash</code></td>
+<td>$0.15</td>
+<td>$0.60</td>
+<td>Balanced speed</td>
+<td>1M</td>
+</tr>
+<tr class="odd">
+<td>2.5 Flash-Lite</td>
+<td><code>gemini-2.5-flash-lite</code></td>
+<td>$0.10</td>
+<td>$0.40</td>
+<td>Ultra-cheap bulk</td>
+<td>1M</td>
+</tr>
+<tr class="even">
+<td>2.0 Flash</td>
+<td><code>gemini-2.0-flash</code></td>
+<td>$0.075</td>
+<td>$0.30</td>
+<td>Legacy Flash</td>
+<td>1M</td>
+</tr>
+</tbody>
+</table>
+<p>*Long-context (&gt;200K tokens) toepassen hogere tarieven</p>
+</section>
+<section id="tabel-3b-quickreference-model-ids-voor-implementatie" class="level3">
+<h3 class="anchored" data-anchor-id="tabel-3b-quickreference-model-ids-voor-implementatie">Tabel 3B: Quickreference Model IDs voor Implementatie</h3>
+<pre><code>ANTHROPIC (via platform.anthropic.com)
+┌─────────────────────────────────────────────┐
+│ claude-opus-4-5-20251101      # Gebruik dit │
+│ claude-sonnet-4-5-20250929    # Voor meeste │
+│ claude-haiku-4-5-20251001     # Voor bulk  │
+└─────────────────────────────────────────────┘
+
+GOOGLE (via ai.google.dev of vertex-ai)
+┌─────────────────────────────────────────────┐
+│ gemini-3-pro-preview          # Nieuwste   │
+│ gemini-2.5-pro                # Production │
+│ gemini-2.5-flash              # Balanced   │
+│ gemini-2.5-flash-lite         # Budget     │
+└─────────────────────────────────────────────┘</code></pre>
+<hr>
+</section>
+</section>
+<section id="c-praktische-code-voorbeelden" class="level2">
+<h2 class="anchored" data-anchor-id="c-praktische-code-voorbeelden">3C: Praktische Code Voorbeelden</h2>
+<section id="python---anthropic-claude" class="level3">
+<h3 class="anchored" data-anchor-id="python---anthropic-claude">Python - Anthropic Claude</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> anthropic</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> anthropic.Anthropic(api_key<span class="op">=</span><span class="st">"your-api-key"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Opus 4.5 - meest capabel</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> client.messages.create(</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span><span class="st">"claude-opus-4-5-20251101"</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    max_tokens<span class="op">=</span><span class="dv">1024</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    messages<span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="st">"Complex reasoning task"</span>}]</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Sonnet 4.5 - balanced (aanbevolen voor meeste)</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> client.messages.create(</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span><span class="st">"claude-sonnet-4-5-20250929"</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    max_tokens<span class="op">=</span><span class="dv">1024</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    messages<span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="st">"Your prompt here"</span>}]</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Haiku 4.5 - high volume</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> client.messages.create(</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span><span class="st">"claude-haiku-4-5-20251001"</span>,</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    max_tokens<span class="op">=</span><span class="dv">512</span>,</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    messages<span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="st">"Quick classification"</span>}]</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="python---google-gemini" class="level3">
+<h3 class="anchored" data-anchor-id="python---google-gemini">Python - Google Gemini</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> google.generativeai <span class="im">as</span> genai</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>genai.configure(api_key<span class="op">=</span><span class="st">"your-api-key"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Gemini 2.5 Pro - production</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> genai.GenerativeModel(<span class="st">"gemini-2.5-pro"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> model.generate_content(<span class="st">"Your prompt here"</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Gemini 2.5 Flash - balanced speed</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> genai.GenerativeModel(<span class="st">"gemini-2.5-flash"</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> model.generate_content(<span class="st">"Your prompt here"</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Gemini 2.5 Flash-Lite - budget option</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> genai.GenerativeModel(<span class="st">"gemini-2.5-flash-lite"</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> model.generate_content(<span class="st">"Quick task"</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Gemini 3 Pro Preview - latest (noch niet volledig beschikbaar)</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> genai.GenerativeModel(<span class="st">"gemini-3-pro-preview"</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> model.generate_content(<span class="st">"Cutting-edge reasoning"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="curl---anthropic" class="level3">
+<h3 class="anchored" data-anchor-id="curl---anthropic">cURL - Anthropic</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> https://api.anthropic.com/v1/messages <span class="dt">\</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">"x-api-key: </span><span class="va">$ANTHROPIC_API_KEY</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">"anthropic-version: 2023-06-01"</span> <span class="dt">\</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">"content-type: application/json"</span> <span class="dt">\</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">'{</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="st">    "model": "claude-opus-4-5-20251101",</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="st">    "max_tokens": 1024,</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="st">    "messages": [</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="st">      {"role": "user", "content": "Hello, Claude!"}</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="st">    ]</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="st">  }'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="curl---google-gemini" class="level3">
+<h3 class="anchored" data-anchor-id="curl---google-gemini">cURL - Google Gemini</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="st">"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=</span><span class="va">$GOOGLE_API_KEY</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">"Content-Type: application/json"</span> <span class="dt">\</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">'{</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="st">    "contents": [{</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="st">      "parts": [{"text": "Hello, Gemini!"}]</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="st">    }]</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="st">  }'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+</section>
+</section>
+<section id="functionaliteiten-vergelijking" class="level2">
+<h2 class="anchored" data-anchor-id="functionaliteiten-vergelijking">5. FUNCTIONALITEITEN VERGELIJKING</h2>
+<section id="prompt-caching-kostenreductie" class="level3">
+<h3 class="anchored" data-anchor-id="prompt-caching-kostenreductie">Prompt Caching (Kostenreductie)</h3>
+<ul>
+<li><strong>Anthropic Claude:</strong>
+<ul>
+<li>5-minuten cache: 1.25x write tokens, 0.1x read tokens</li>
+<li>1-uur cache: 2x write tokens, 0.1x read tokens</li>
+</ul></li>
+<li><strong>Google Gemini:</strong>
+<ul>
+<li>90% korting op cache reads</li>
+<li>Storage: $1-4.50 per miljoen tokens per uur</li>
+</ul></li>
+</ul>
+</section>
+<section id="extended-thinking-reasoning" class="level3">
+<h3 class="anchored" data-anchor-id="extended-thinking-reasoning">Extended Thinking / Reasoning</h3>
+<ul>
+<li><strong>Claude:</strong> Ondersteund op alle 4.5 modellen. Thinking tokens = output tokens (meerekenen in output kosten)</li>
+<li><strong>Gemini:</strong> Denken budget op Pro &amp; Flash modellen. Thinking tokens = extra output tokens</li>
+</ul>
+</section>
+<section id="batch-api" class="level3">
+<h3 class="anchored" data-anchor-id="batch-api">Batch API</h3>
+<ul>
+<li><strong>Beide aanbieders:</strong> 50% korting op alle tokens</li>
+<li>Geschikt voor: Non-urgent bulk processing</li>
+<li>Verwerking: Asynchrone verwerking (uren tot dagen)</li>
+</ul>
+</section>
+<section id="multimodal-support" class="level3">
+<h3 class="anchored" data-anchor-id="multimodal-support">Multimodal Support</h3>
+<ul>
+<li><strong>Claude:</strong> Afbeeldingen volledig ondersteund, audio in bèta</li>
+<li><strong>Gemini:</strong> Tekst, afbeeldingen, video, audio native ondersteund. Image generation (Imagen), video generation (Veo)</li>
+</ul>
+</section>
+<section id="context-windows" class="level3">
+<h3 class="anchored" data-anchor-id="context-windows">Context Windows</h3>
+<ul>
+<li><strong>Claude:</strong> 1M tokens (Opus 4.5, Sonnet 4.5), 200K (Haiku 4.5)</li>
+<li><strong>Gemini:</strong> 1M tokens (alle modellen)</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="performance-vergelijking" class="level2">
+<h2 class="anchored" data-anchor-id="performance-vergelijking">6. PERFORMANCE VERGELIJKING</h2>
+<section id="coding-abilities" class="level3">
+<h3 class="anchored" data-anchor-id="coding-abilities">Coding Abilities</h3>
+<ol type="1">
+<li><strong>Claude Opus 4.5</strong> - Best overall (SWE-bench leader)</li>
+<li><strong>Gemini 2.5 Pro</strong> - Sterke tweede plaats</li>
+<li><strong>Claude Sonnet 4.5</strong> - Solid, cost-effective</li>
+<li><strong>Gemini 2.5 Flash</strong> - Adequate met denken</li>
+</ol>
+</section>
+<section id="reasoning-planning" class="level3">
+<h3 class="anchored" data-anchor-id="reasoning-planning">Reasoning &amp; Planning</h3>
+<ol type="1">
+<li><strong>Claude Opus 4.5</strong> - State-of-the-art</li>
+<li><strong>Gemini 3 Pro Preview</strong> - Very strong</li>
+<li><strong>Gemini 2.5 Pro</strong> - Goed</li>
+<li><strong>Claude Sonnet 4.5</strong> - Goed</li>
+</ol>
+</section>
+<section id="speed" class="level3">
+<h3 class="anchored" data-anchor-id="speed">Speed</h3>
+<ol type="1">
+<li><strong>Gemini 2.5 Flash-Lite</strong> - Fastest</li>
+<li><strong>Claude Haiku 4.5</strong> - Zeer snel</li>
+<li><strong>Gemini 2.5 Flash</strong> - Snel</li>
+<li><strong>Gemini 2.5 Pro / Claude Sonnet 4.5</strong> - Normaal</li>
+<li><strong>Claude Opus 4.5 / Gemini 3 Pro</strong> - Traagste (meeste denken)</li>
+</ol>
+</section>
+<section id="multimodal" class="level3">
+<h3 class="anchored" data-anchor-id="multimodal">Multimodal</h3>
+<ol type="1">
+<li><strong>Gemini (alle)</strong> - Native video, audio support</li>
+<li><strong>Claude 4.5</strong> - Afbeeldingen, audio in dev</li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="cost-benefit-analyse-per-scenario" class="level2">
+<h2 class="anchored" data-anchor-id="cost-benefit-analyse-per-scenario">7. COST-BENEFIT ANALYSE PER SCENARIO</h2>
+<section id="scenario-1-content-generation-hoge-volume" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-1-content-generation-hoge-volume">Scenario 1: Content Generation (Hoge volume)</h3>
+<p><strong>Aanbeveling:</strong> Gemini 2.5 Flash-Lite of Claude Haiku 4.5 - Google: $100 input / $400 output per miljard tokens - Anthropic: $1.000 input / $5.000 output per miljard tokens - <strong>Winner:</strong> Google (4-5x goedkoper)</p>
+</section>
+<section id="scenario-2-enterprise-software-development" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-2-enterprise-software-development">Scenario 2: Enterprise Software Development</h3>
+<p><strong>Aanbeveling:</strong> Claude Opus 4.5 of Gemini 2.5 Pro - Claude Opus: $5.000 input / $25.000 output per miljard tokens - Gemini 2.5 Pro: $1.250 input / $10.000 output per miljard tokens - <strong>Noter:</strong> Claude beter, maar Gemini goedkoper. Keuze hangt af van coding performance vereiste.</p>
+</section>
+<section id="scenario-3-high-volume-structured-data-processing" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-3-high-volume-structured-data-processing">Scenario 3: High-Volume Structured Data Processing</h3>
+<p><strong>Aanbeveling:</strong> Batch API + Caching - Claude Sonnet 4.5 + batch: $1.50 input / $7.50 output per miljard - Gemini 2.5 Flash + batch: $0.30-0.375 input / $1.50-1.75 output per miljard - <strong>Winner:</strong> Google (5-10x goedkoper)</p>
+</section>
+<section id="scenario-4-real-time-customer-support-chatbots" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-4-real-time-customer-support-chatbots">Scenario 4: Real-Time Customer Support Chatbots</h3>
+<p><strong>Aanbeveling:</strong> Gemini 2.5 Flash of Claude Sonnet 4.5 - Performance: Gelijk - Kosten: Gemini iets goedkoper - Latency: Gemini sneller (Flash variant) - <strong>Aanbeveling:</strong> Gemini 2.5 Flash voor pure kosten; Claude Sonnet 4.5 voor hogere quality guarantee</p>
+</section>
+<section id="scenario-5-complex-analysis-reasoning-juridischfinancieel" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-5-complex-analysis-reasoning-juridischfinancieel">Scenario 5: Complex Analysis &amp; Reasoning (Juridisch/Financieel)</h3>
+<p><strong>Aanbeveling:</strong> Claude Opus 4.5 of Gemini 3 Pro Preview - Claude: Better reasoning track record - Gemini: Newer, competitive - <strong>Winner:</strong> Claude Opus 4.5 (beproefde stabiliteit)</p>
+<hr>
+</section>
+</section>
+<section id="sleutelcijfers-trends" class="level2">
+<h2 class="anchored" data-anchor-id="sleutelcijfers-trends">8. SLEUTELCIJFERS &amp; TRENDS</h2>
+<section id="anthropic" class="level3">
+<h3 class="anchored" data-anchor-id="anthropic">Anthropic</h3>
+<ul>
+<li>November 2025: Claude Opus 4.5 uitgebracht met 67% prijsverlaging</li>
+<li>Aug 2025: Weekly rate limits ingevoerd voor Claude Code heavy users</li>
+<li>API kosten variëren van $1-$75 per miljoen tokens (Haiku tot Opus)</li>
+</ul>
+</section>
+<section id="google" class="level3">
+<h3 class="anchored" data-anchor-id="google">Google</h3>
+<ul>
+<li>Late 2025: Gemini 3 Pro Preview met 80%+ betere reasoning</li>
+<li>Aggressive pricing strategy om marktaandeel te pakken</li>
+<li>Sterke integratie met Google Cloud services</li>
+<li>Free tier beschikbaar voor veel modellen</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="aanbevelingen-selectiematrix" class="level2">
+<h2 class="anchored" data-anchor-id="aanbevelingen-selectiematrix">9. AANBEVELINGEN SELECTIEMATRIX</h2>
+<pre><code>┌─────────────────────┬──────────────────┬──────────────────┐
+│ Use Case            │ Anthropic        │ Google Gemini    │
+├─────────────────────┼──────────────────┼──────────────────┤
+│ Bulk Content Gen    │ Haiku 4.5        │ Flash-Lite ✓✓    │
+│ Customer Support    │ Sonnet 4.5       │ 2.5 Flash ✓      │
+│ Code Development    │ Opus 4.5 ✓✓      │ 2.5 Pro ✓        │
+│ Data Analysis       │ Sonnet 4.5       │ 2.5 Pro ✓        │
+│ Video Analysis      │ Haiku/Sonnet     │ 2.5 Pro ✓✓       │
+│ Real-time Chat      │ Sonnet 4.5       │ 2.5 Flash ✓      │
+│ Complex Reasoning   │ Opus 4.5 ✓✓      │ 3 Pro Prev ✓     │
+│ Budget Constraint   │ Haiku 4.5        │ Flash-Lite ✓✓    │
+│ Production Stable   │ Sonnet 4.5 ✓     │ 2.5 Pro ✓        │
+│ Experimental/Latest │ Opus 4.5         │ 3 Pro Prev ✓     │
+└─────────────────────┴──────────────────┴──────────────────┘
+✓ = Good  |  ✓✓ = Excellent</code></pre>
+<hr>
+</section>
+<section id="edge-cases-special-features" class="level2">
+<h2 class="anchored" data-anchor-id="edge-cases-special-features">10. EDGE CASES &amp; SPECIAL FEATURES</h2>
+<section id="claude-specifiek" class="level3">
+<h3 class="anchored" data-anchor-id="claude-specifiek">Claude Specifiek</h3>
+<ul>
+<li><strong>Tool Use:</strong> Automatische system prompts voor tool calling</li>
+<li><strong>Extended Thinking:</strong> Expliciete denk-time budgets (min. 1.024 tokens)</li>
+<li><strong>Context Compaction:</strong> Memory management voor agentic tasks</li>
+<li><strong>Effort Parameter:</strong> Minimaliseer tijd/kosten vs.&nbsp;maximaliseer capability</li>
+</ul>
+</section>
+<section id="gemini-specifiek" class="level3">
+<h3 class="anchored" data-anchor-id="gemini-specifiek">Gemini Specifiek</h3>
+<ul>
+<li><strong>Google Search Grounding:</strong> Real-time web info (1.500-500 RPD gratis)</li>
+<li><strong>Live API:</strong> Stream-based interaction ($0.005 sessie + $0.025/minuut)</li>
+<li><strong>Native Image/Video Gen:</strong> Imagen &amp; Veo geïntegreerd</li>
+<li><strong>Computer Use:</strong> Browser automation (Gemini 2.5 Preview)</li>
+<li><strong>Model Optimizer:</strong> Dynamische routing (Vertex AI)</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="conclusie-beste-praktijken" class="level2">
+<h2 class="anchored" data-anchor-id="conclusie-beste-praktijken">11. CONCLUSIE &amp; BESTE PRAKTIJKEN</h2>
+<p><strong>Kies Claude Opus 4.5 als:</strong> - Complexe reasoning/planning essentieel is - Software engineering de focus is - Budget secundair is</p>
+<p><strong>Kies Claude Sonnet 4.5 als:</strong> - Balanced performance-cost verhouding nodig is - Production stability prioriteit heeft - Diverse workloads (support, analytics, coding)</p>
+<p><strong>Kies Claude Haiku 4.5 als:</strong> - Volume = prioriteit - Latency moet minimaal zijn - Eenvoudige classificatie/summarization</p>
+<p><strong>Kies Gemini 2.5 Pro als:</strong> - Multimodal (video/audio) nodig is - Google Cloud ecosystem voorkeur - Coding performance evengoed is</p>
+<p><strong>Kies Gemini 2.5 Flash als:</strong> - Speed + cost balance nodig - Real-time responsiveness critical - Budget constraints aanwezig</p>
+<p><strong>Kies Gemini 2.5 Flash-Lite als:</strong> - Minimale kosten absolute prioriteit - Volume processing (miljarden tokens) - Quality trade-off acceptabel</p>
+<hr>
+<p><strong>Laatste Update:</strong> Februari 2026 | Alle prijzen in USD | Rates onderhevig aan wijziging</p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

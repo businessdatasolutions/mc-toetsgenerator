@@ -95,7 +95,7 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 - [x] **T4.2** Unit test `ProtectedRoute`: rendert children als session aanwezig, redirect naar `/login` als session null
 - [x] **T4.3** Navigatie test: render de router, navigeer naar `/exams/upload` en verifieer dat `ExamUpload` component gerenderd wordt (check op h1 tekst)
 - [x] **T4.4** `npm run build` slaagt zonder TypeScript errors
-- [ ] **T4.5** Handmatige check: `npm run dev`, open browser, login-pagina wordt getoond. Na inloggen (met test-user uit Supabase dashboard) wordt Home getoond
+- [x] **T4.5** Handmatige check: `npm run dev`, open browser, login-pagina wordt getoond. Na inloggen (met test-user uit Supabase dashboard) wordt Home getoond
 
 ---
 
@@ -159,7 +159,7 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 - [x] **T6.1** Pytest: `ValidationResult` Pydantic model accepteert correcte data en reject ongeldige data (bijv. `bet_score=6` faalt, `bet_discriminatie="ongeldig"` faalt)
 - [x] **T6.2** Pytest: `build_validation_prompt()` retourneert een list met 2 dicts (system + user). De user content bevat alle drie criteria XML-tags en de `<question>` en `<deterministic_results>` tags
 - [x] **T6.3** Pytest: `build_validation_prompt()` bevat GEEN `<output_schema>` tag (want structured output regelt dat)
-- [ ] **T6.4** Integratietest (vereist `ANTHROPIC_API_KEY` env var): roep `llm_client.validate_question()` aan met een voorbeeld MC-vraag. Verifieer dat het resultaat een `ValidationResult` instance is met alle velden gevuld, scores tussen 1-5, en `bet_discriminatie` in `["hoog","gemiddeld","laag","geen"]`
+- [x] **T6.4** Integratietest (vereist `ANTHROPIC_API_KEY` env var): roep `llm_client.validate_question()` aan met een voorbeeld MC-vraag. Verifieer dat het resultaat een `ValidationResult` instance is met alle velden gevuld, scores tussen 1-5, en `bet_discriminatie` in `["hoog","gemiddeld","laag","geen"]`
 - [x] **T6.5** Pytest: `validation_pipeline` — mock de Supabase client en LLM client. Verifieer dat voor 3 vragen: 3 deterministic analyses draaien, 3 LLM calls plaatsvinden, 3 assessments geschreven worden, en de exam status geüpdatet wordt
 
 ---
@@ -187,10 +187,10 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 #### Tests taak 7
 
 - [x] **T7.1** Deploy Edge Functions naar Supabase: `supabase functions deploy analyze`, `supabase functions deploy embed-material`, `supabase functions deploy export` — alle drie slagen
-- [ ] **T7.2** Handmatige test: stuur een `POST` naar `/functions/v1/analyze` met een geldig exam_id en Authorization header. Verifieer dat response status 200 is en body `{job_id, status: "processing"}` bevat
+- [x] **T7.2** Handmatige test: stuur een `POST` naar `/functions/v1/analyze` met een geldig exam_id en Authorization header. Verifieer dat response status 200 is en body `{job_id, status: "processing"}` bevat
 - [x] **T7.3** Auth test: stuur een request zonder Authorization header → verwacht 401
 - [ ] **T7.4** Ownership test: stuur een request met User B's token voor User A's exam → verwacht 403
-- [ ] **T7.5** Export test: stuur `GET /functions/v1/export?exam_id=...&format=csv` → verifieer dat response Content-Type `text/csv` is en body geldige CSV bevat met kolommen voor stam, scores, flags
+- [x] **T7.5** Export test: stuur `GET /functions/v1/export?exam_id=...&format=csv` → verifieer dat response Content-Type `text/csv` is en body geldige CSV bevat met kolommen voor stam, scores, flags
 
 ---
 
@@ -271,7 +271,7 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 #### Tests taak 10
 
 - [x] **T10.1** React test `Export`: render component, klik op "CSV" knop, verifieer dat `exportExam()` aangeroepen wordt met format "csv"
-- [ ] **T10.2** Edge Function test: roep export aan met format=csv voor een exam met 3 vragen, verifieer dat CSV output 4 regels bevat (1 header + 3 vragen) en alle score-kolommen aanwezig zijn
+- [x] **T10.2** Edge Function test: roep export aan met format=csv voor een exam met 3 vragen, verifieer dat CSV output 4 regels bevat (1 header + 3 vragen) en alle score-kolommen aanwezig zijn
 - [ ] **T10.3** Edge Function test: roep export aan met format=markdown, verifieer dat output geldige Markdown is met `#` headers en een tabel
 
 ---
@@ -356,7 +356,7 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 - [x] **T13.1** Pytest `retrieve_chunks` (mock OpenAI + mock Supabase RPC): verifieer dat een query leidt tot een embedding call en een `match_chunks` RPC call met correcte parameters
 - [x] **T13.2** Pytest `build_generation_prompt`: verifieer dat output system prompt, `<specification>` tag, `<source_material>` met chunk tags, en `<quality_rules>` bevat
-- [ ] **T13.3** Integratietest (vereist `ANTHROPIC_API_KEY`): roep `llm_client.generate_questions()` aan met 2 dummy chunks en specificatie voor 2 vragen op Bloom-niveau "toepassen". Verifieer dat resultaat 2 `GeneratedQuestion` objecten bevat met alle velden gevuld en `source_chunk_ids` die verwijzen naar de meegegeven chunks
+- [x] **T13.3** Integratietest (vereist `ANTHROPIC_API_KEY`): roep `llm_client.generate_questions()` aan met 2 dummy chunks en specificatie voor 2 vragen op Bloom-niveau "toepassen". Verifieer dat resultaat 2 `GeneratedQuestion` objecten bevat met alle velden gevuld en `source_chunk_ids` die verwijzen naar de meegegeven chunks
 - [x] **T13.4** Pytest `generation_pipeline` (mock alles): verifieer de volledige flow: lees job → retrieve chunks → generate → insert questions → run validation → update job
 - [ ] **T13.5** Edge Function test: POST naar `/functions/v1/generate` met geldige data → response bevat `{job_id, status: "processing"}` en een `generation_jobs` record is aangemaakt in de database
 
@@ -399,14 +399,14 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 - [x] **15.1** Schrijf `sidecar/Dockerfile` (zie TDD sectie 9.3): Python 3.12-slim, install requirements, expose 8000, uvicorn CMD
 - [x] **15.2** Maak `sidecar/.env.example` met alle vereiste env vars
-- [ ] **15.3** Test Docker build: `docker build -t mc-sidecar ./sidecar` (vereist Docker installatie)
-- [ ] **15.4** Test Docker run: `docker run -p 8000:8000 --env-file .env mc-sidecar` → healthcheck werkt
+- [x] **15.3** Test Docker build: `docker build -t mc-sidecar ./sidecar` (vereist Docker installatie)
+- [x] **15.4** Test Docker run: `docker run -p 8000:8000 --env-file .env mc-sidecar` → healthcheck werkt
 - [ ] **15.5** Deploy naar gekozen platform (Fly.io / Railway / Cloud Run) — configureer env vars daar
 - [ ] **15.6** Update Supabase Edge Functions met de productie sidecar URL als secret
 
 #### Tests taak 15
 
-- [ ] **T15.1** `docker build` slaagt zonder errors (vereist Docker)
-- [ ] **T15.2** Container draait en `/health` retourneert `{"status": "ok"}` (vereist Docker)
+- [x] **T15.1** `docker build` slaagt zonder errors (vereist Docker)
+- [x] **T15.2** Container draait en `/health` retourneert `{"status": "ok"}` (vereist Docker)
 - [ ] **T15.3** Productie sidecar is bereikbaar: `curl https://<sidecar-url>/health` retourneert 200
 - [ ] **T15.4** End-to-end: trigger analyse via de live site → sidecar verwerkt de vragen → resultaten verschijnen in het dashboard

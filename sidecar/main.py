@@ -1,6 +1,7 @@
 import asyncio
 
 from fastapi import BackgroundTasks, FastAPI, File, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from llm.client import LLMClient
@@ -13,6 +14,13 @@ from services.supabase_client import get_supabase_client
 from services.validation_pipeline import run_validation
 
 app = FastAPI(title="MC Toetsvalidatie Sidecar")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class AnalyzeRequest(BaseModel):
