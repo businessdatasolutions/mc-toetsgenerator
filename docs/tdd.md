@@ -605,7 +605,9 @@ def analyze(question: Question) -> DeterministicResult:
 
     Checks:
     1. Langste-antwoord-bias: correct antwoord >50% langer dan gemiddelde afleider
-    2. Homogeniteit: standaarddeviatie van antwoordlengtes, genormaliseerd 0-1
+    2. Homogeniteit: standaarddeviatie van antwoordlengtes, genormaliseerd 0-1.
+       Uitzondering: bij korte antwoorden (1-2 woorden) wordt een hogere tolerantie
+       gehanteerd — kleine absolute lengteverschillen zijn dan onvermijdelijk.
     3. Absolute termen: scan op 'altijd', 'nooit', 'alle', 'geen', 'elke', 'iedere'
     4. Ontkenning: detectie van 'niet', 'geen', 'behalve', 'uitgezonderd' in stam
     5. Ontkenning benadrukt: hoofdletters of markdown bold

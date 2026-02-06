@@ -47,8 +47,22 @@ De volgende technische aspecten zijn **al gemeten** door de deterministische ana
 |-----------|------|----------|
 | **Plausibiliteit** | Aantrekkelijk voor wie stof niet beheerst | Overduidelijk fout of "grapjes" |
 | **Duidelijk fout** | Voor competente student herkenbaar als fout | Discutabel of deels juist |
-| **Homogeniteit** | Vergelijkbaar qua lengte, stijl, complexiteit | Correct antwoord springt eruit |
+| **Logische integriteit** | Opties zijn wederzijds uitsluitend — precies één antwoord kan correct zijn | Meerdere opties zijn tegelijk waar, of opties overlappen logisch (zie voorbeeld hieronder) |
+| **Homogeniteit** | Vergelijkbaar qua lengte, stijl, complexiteit. **Uitzondering:** bij korte antwoorden (1-2 woorden) mag de lengte meer variëren — kleine absolute verschillen zijn dan onvermijdelijk en niet problematisch. | Correct antwoord springt eruit |
 | **Geen absoluten** | Vermijdt "altijd", "nooit", "alle", "geen" | Bevat absolute termen (vaak fout) |
+
+### Voorbeeld: logische integriteit schending
+
+```
+A) Stelling 1 is juist
+B) Stelling 2 is juist
+C) Stelling 1 en 2 zijn onjuist
+D) Stelling 1 en 2 zijn juist       ← correct antwoord
+```
+
+**Probleem:** Als D correct is, zijn A en B automatisch ook waar. De opties zijn niet wederzijds uitsluitend. **Oplossing:** A en B hadden moeten luiden "*Uitsluitend* stelling 1/2 is juist", zodat ze logisch incompatibel zijn met D.
+
+---
 
 ## AI-specifieke Beoordeling (niet automatisch meetbaar)
 
@@ -59,6 +73,7 @@ Focus op deze patronen die ALLEEN door AI beoordeeld kunnen worden:
 3. **"Alle bovenstaande"**: Is er een complexe optie die testwijsheid beloont?
 4. **Grammaticale hints**: Past het correct antwoord grammaticaal beter bij de stam?
 5. **Semantische helderheid stam**: Is de vraag duidelijk zonder de opties te lezen?
+6. **Logische integriteit**: Zijn de opties wederzijds uitsluitend? Controleer vooral bij stellingvragen of combinatie-opties (bijv. "A en B zijn juist") niet logisch overlappen met individuele opties.
 
 **NIET beoordelen** (al gedaan door deterministic_analyzer.py):
 - Langste antwoord bias → zie `tech_kwant_longest_bias`
