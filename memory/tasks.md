@@ -238,7 +238,7 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
   - **9.8b** Daaronder: Heatmap component met alle vragen
   - **9.8c** Daaronder: lijst van QuestionCards, sorteerbaar en filterbaar (filter op score-range, Bloom-niveau)
   - **9.8d** "Aandachtsvragen" sectie: toon vragen waar minstens 1 dimensie ≤ 2
-  - **9.8e** Loading state tonen terwijl `analysis_status === 'processing'`, met realtime update naar resultaten wanneer `'completed'`
+  - **9.8e** Loading state tonen terwijl `analysis_status === 'processing'`, met realtime update naar resultaten wanneer `'completed'`. Geïmplementeerd met real-time voortgangsbalk: `exams.question_count` en `exams.questions_analyzed` kolommen worden via Supabase Realtime naar de frontend gepusht. De sidecar roept `increment_questions_analyzed()` SQL-functie aan na elke vraag. Dashboard toont "Vraag X van Y geanalyseerd" met geanimeerde CSS progress bar. Migraties: `20260206170000_enable_realtime.sql` (Realtime publicatie) en `20260206180000_add_progress_fields.sql` (voortgangskolommen + RPC)
 - [x] **9.9** Implementeer `src/routes/QuestionDetail.tsx`:
   - **9.9a** Toon volledige vraag: stam, alle opties met markering van correct antwoord
   - **9.9b** RadarChart met de drie dimensiescores

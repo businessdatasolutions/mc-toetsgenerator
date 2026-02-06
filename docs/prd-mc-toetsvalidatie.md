@@ -123,7 +123,7 @@ toetsmatrijs        werp, # opties      met LLM               (Module A)        
 - **Progressive disclosure:** Overzicht eerst (dashboard), detail on-demand (per vraag)
 - **Inline editing:** Vragen direct aanpassen vanuit het validatierapport, zonder context te verliezen
 - **Batch + individueel:** Zowel hele sets als individuele vragen verwerken
-- **Non-blocking processing:** Lange analyses draaien asynchroon; gebruiker krijgt notificatie bij klaar
+- **Non-blocking processing:** Lange analyses draaien asynchroon op de sidecar (Cloud Run). De `exams`-tabel is opgenomen in de Supabase Realtime-publicatie, zodat statuswijzigingen (`processing` → `completed`) automatisch naar de frontend worden gepusht. Tijdens de analyse toont het dashboard een **voortgangsbalk** ("Vraag 5 van 20 geanalyseerd") die real-time bijwerkt via de `question_count` en `questions_analyzed` kolommen op de `exams`-tabel. De sidecar incrementeert `questions_analyzed` atomisch na elke geanalyseerde vraag via een SQL-functie (`increment_questions_analyzed`). Zodra de status `completed` bereikt, worden de scores, heatmap en KPI-kaarten automatisch geladen zonder handmatige paginaverversing
 - **Kleurcodes:** 🟢 Score 4-5 · 🟡 Score 3 · 🔴 Score 1-2 — direct zichtbaar in het overzicht
 
 ---
