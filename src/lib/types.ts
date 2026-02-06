@@ -17,6 +17,8 @@ export interface Exam {
   created_by: string
   learning_goals: string[]
   analysis_status: AnalysisStatus
+  question_count: number
+  questions_analyzed: number
   created_at: string
   updated_at: string
 }

@@ -29,6 +29,8 @@ const mockExam = {
   created_by: 'user1',
   learning_goals: [],
   analysis_status: 'completed',
+  question_count: 3,
+  questions_analyzed: 3,
   created_at: '2024-01-01',
   updated_at: '2024-01-01',
 }

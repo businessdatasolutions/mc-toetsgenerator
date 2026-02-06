@@ -119,9 +119,26 @@ export default function ExamDashboard() {
 
       {isProcessing && (
         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-blue-700">
-            Analyse wordt uitgevoerd... De resultaten verschijnen automatisch.
-          </p>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-blue-700 font-medium">
+              Analyse wordt uitgevoerd...
+            </p>
+            {exam.question_count > 0 && (
+              <span className="text-blue-600 text-sm">
+                Vraag {exam.questions_analyzed} van {exam.question_count} geanalyseerd
+              </span>
+            )}
+          </div>
+          {exam.question_count > 0 && (
+            <div className="w-full bg-blue-200 rounded-full h-2">
+              <div
+                className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
+                style={{
+                  width: `${Math.round((exam.questions_analyzed / exam.question_count) * 100)}%`,
+                }}
+              />
+            </div>
+          )}
         </div>
       )}
 

@@ -104,7 +104,11 @@ Deno.serve(async (req) => {
 
   await adminClient
     .from("exams")
-    .update({ analysis_status: "processing" })
+    .update({
+      analysis_status: "processing",
+      question_count: count ?? 0,
+      questions_analyzed: 0,
+    })
     .eq("id", examId);
 
   // 7.2e: Fire-and-forget POST to sidecar

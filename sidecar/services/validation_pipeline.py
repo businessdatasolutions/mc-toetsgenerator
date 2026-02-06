@@ -86,6 +86,12 @@ async def _validate_single_question(
             on_conflict="question_id,question_version",
         ).execute()
 
+        # Update progress counter (atomic increment via SQL function)
+        supabase.rpc(
+            "increment_questions_analyzed",
+            {"p_exam_id": question_row["exam_id"]},
+        ).execute()
+
 
 async def run_validation(
     exam_id: str,
@@ -121,6 +127,11 @@ async def run_validation(
             ).eq("id", exam_id).execute()
             return
 
+        # Set question_count and reset progress
+        supabase.table("exams").update(
+            {"question_count": len(questions), "questions_analyzed": 0}
+        ).eq("id", exam_id).execute()
+
         semaphore = asyncio.Semaphore(MAX_CONCURRENCY)
 
         tasks = [
@@ -129,9 +140,9 @@ async def run_validation(
         ]
         await asyncio.gather(*tasks)
 
-        # Mark exam as completed
+        # Mark exam as completed with final progress count
         supabase.table("exams").update(
-            {"analysis_status": "completed"}
+            {"analysis_status": "completed", "questions_analyzed": len(questions)}
         ).eq("id", exam_id).execute()
 
     except Exception as e:
