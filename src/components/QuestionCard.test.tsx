@@ -106,11 +106,13 @@ describe('QuestionCard', () => {
 
     expect(screen.queryByTitle('Vraag verwijderen')).not.toBeInTheDocument()
     expect(screen.queryByTitle('Vraag dupliceren')).not.toBeInTheDocument()
+    expect(screen.queryByTitle('Herbeoordelen')).not.toBeInTheDocument()
   })
 
-  it('TQ.2: delete and duplicate buttons visible when callbacks are provided', () => {
+  it('TQ.2: delete, duplicate, and reassess buttons visible when callbacks are provided', () => {
     const onDelete = vi.fn()
     const onDuplicate = vi.fn()
+    const onReassess = vi.fn()
 
     render(
       <MemoryRouter>
@@ -119,20 +121,26 @@ describe('QuestionCard', () => {
           examId="exam1"
           onDelete={onDelete}
           onDuplicate={onDuplicate}
+          onReassess={onReassess}
         />
       </MemoryRouter>
     )
 
     const deleteBtn = screen.getByTitle('Vraag verwijderen')
     const duplicateBtn = screen.getByTitle('Vraag dupliceren')
+    const reassessBtn = screen.getByTitle('Herbeoordelen')
 
     expect(deleteBtn).toBeInTheDocument()
     expect(duplicateBtn).toBeInTheDocument()
+    expect(reassessBtn).toBeInTheDocument()
 
     fireEvent.click(duplicateBtn)
     expect(onDuplicate).toHaveBeenCalledWith('q1')
 
     fireEvent.click(deleteBtn)
     expect(onDelete).toHaveBeenCalledWith('q1')
+
+    fireEvent.click(reassessBtn)
+    expect(onReassess).toHaveBeenCalledWith('q1')
   })
 })

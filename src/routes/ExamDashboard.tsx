@@ -28,6 +28,7 @@ export default function ExamDashboard() {
   const [addOptions, setAddOptions] = useState(['', '', '', ''])
   const [addCorrect, setAddCorrect] = useState(0)
   const [addSaving, setAddSaving] = useState(false)
+  const [reassessingId, setReassessingId] = useState<string | null>(null)
 
   // Fetch score summary via RPC (only when analysis is done)
   useEffect(() => {
@@ -128,6 +129,73 @@ export default function ExamDashboard() {
       refetch()
     }
     setAddSaving(false)
+  }
+
+  const handleReassessQuestion = async (questionId: string) => {
+    if (!examId) return
+    setReassessingId(questionId)
+    setActionError(null)
+
+    try {
+      const { data: session } = await supabase.auth.getSession()
+      const token = session?.session?.access_token
+      if (!token) {
+        setActionError('Niet ingelogd. Log opnieuw in.')
+        setReassessingId(null)
+        return
+      }
+
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ exam_id: examId, question_id: questionId }),
+        }
+      )
+
+      if (!resp.ok) {
+        const errBody = await resp.json().catch(() => ({}))
+        setActionError(errBody.error ?? 'Herbeoordeling mislukt.')
+        setReassessingId(null)
+        return
+      }
+
+      // Poll for new assessment
+      const startTime = Date.now()
+      const question = questions.find((q) => q.id === questionId)
+      const currentVersion = question?.version ?? 1
+      const oldCreatedAt = question?.assessments?.[0]?.created_at ?? ''
+
+      const poll = setInterval(async () => {
+        const { data } = await supabase
+          .from('assessments')
+          .select('created_at')
+          .eq('question_id', questionId)
+          .eq('question_version', currentVersion)
+          .order('created_at', { ascending: false })
+          .limit(1)
+
+        if (data && data.length > 0 && data[0].created_at > oldCreatedAt) {
+          clearInterval(poll)
+          setReassessingId(null)
+          refetch()
+          refreshSummary()
+        }
+
+        if (Date.now() - startTime > 60000) {
+          clearInterval(poll)
+          setActionError('Herbeoordeling duurt te lang. Ververs de pagina later.')
+          setReassessingId(null)
+        }
+      }, 2000)
+    } catch {
+      setActionError('Herbeoordeling mislukt.')
+      setReassessingId(null)
+    }
   }
 
   if (examLoading || questionsLoading) {
@@ -297,6 +365,8 @@ export default function ExamDashboard() {
                 examId={examId!}
                 onDelete={handleDeleteQuestion}
                 onDuplicate={handleDuplicateQuestion}
+                onReassess={handleReassessQuestion}
+                reassessingId={reassessingId}
               />
             ))}
           </div>
@@ -368,6 +438,8 @@ export default function ExamDashboard() {
               examId={examId!}
               onDelete={handleDeleteQuestion}
               onDuplicate={handleDuplicateQuestion}
+              onReassess={handleReassessQuestion}
+              reassessingId={reassessingId}
             />
           ))}
           {sorted.length === 0 && (

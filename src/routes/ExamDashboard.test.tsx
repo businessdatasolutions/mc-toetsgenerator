@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router'
 
-const { mockFrom, mockRpc, mockChannel, mockRemoveChannel, mockSubscribe, mockDelete, mockInsert } =
+const { mockFrom, mockRpc, mockChannel, mockRemoveChannel, mockSubscribe, mockDelete, mockInsert, mockGetSession } =
   vi.hoisted(() => ({
     mockFrom: vi.fn(),
     mockRpc: vi.fn(),
@@ -11,6 +11,7 @@ const { mockFrom, mockRpc, mockChannel, mockRemoveChannel, mockSubscribe, mockDe
     mockSubscribe: vi.fn(() => ({ unsubscribe: vi.fn() })),
     mockDelete: vi.fn(),
     mockInsert: vi.fn(),
+    mockGetSession: vi.fn(),
   }))
 
 vi.mock('../lib/supabase', () => ({
@@ -19,6 +20,7 @@ vi.mock('../lib/supabase', () => ({
     rpc: mockRpc,
     channel: mockChannel,
     removeChannel: mockRemoveChannel,
+    auth: { getSession: mockGetSession },
   },
 }))
 
@@ -173,6 +175,10 @@ beforeEach(() => {
     on: vi.fn().mockReturnThis(),
     subscribe: mockSubscribe,
   })
+
+  mockGetSession.mockResolvedValue({
+    data: { session: { access_token: 'test-token' } },
+  })
 })
 
 function renderDashboard() {
@@ -217,16 +223,18 @@ describe('ExamDashboard', () => {
     expect(screen.getByText('Aandachtsvragen (1)')).toBeInTheDocument()
   })
 
-  it('TD.1: shows delete and duplicate buttons per question card', async () => {
+  it('TD.1: shows delete, duplicate and reassess buttons per question card', async () => {
     renderDashboard()
     await screen.findByText('Test Toets')
 
     const deleteButtons = screen.getAllByTitle('Vraag verwijderen')
     const duplicateButtons = screen.getAllByTitle('Vraag dupliceren')
+    const reassessButtons = screen.getAllByTitle('Herbeoordelen')
 
     // q2 appears in both attention and all sections = 4 cards total
     expect(deleteButtons.length).toBeGreaterThanOrEqual(3)
     expect(duplicateButtons.length).toBeGreaterThanOrEqual(3)
+    expect(reassessButtons.length).toBeGreaterThanOrEqual(3)
   })
 
   it('TD.2: clicking delete calls supabase delete', async () => {
@@ -271,6 +279,30 @@ describe('ExamDashboard', () => {
         })
       )
     })
+  })
+
+  it('TD.8: clicking reassess calls analyze endpoint with question_id', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ status: 'processing' }), { status: 200 })
+    )
+
+    renderDashboard()
+    await screen.findByText('Test Toets')
+
+    const reassessButtons = screen.getAllByTitle('Herbeoordelen')
+    fireEvent.click(reassessButtons[0])
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalledWith(
+        expect.stringContaining('/functions/v1/analyze'),
+        expect.objectContaining({
+          method: 'POST',
+          body: expect.stringContaining('question_id'),
+        })
+      )
+    })
+
+    fetchSpy.mockRestore()
   })
 
   it('TD.5: shows "+ Vraag toevoegen" button', async () => {
