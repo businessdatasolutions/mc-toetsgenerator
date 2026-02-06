@@ -189,7 +189,7 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 - [x] **T7.1** Deploy Edge Functions naar Supabase: `supabase functions deploy analyze`, `supabase functions deploy embed-material`, `supabase functions deploy export` — alle drie slagen
 - [x] **T7.2** Handmatige test: stuur een `POST` naar `/functions/v1/analyze` met een geldig exam_id en Authorization header. Verifieer dat response status 200 is en body `{job_id, status: "processing"}` bevat
 - [x] **T7.3** Auth test: stuur een request zonder Authorization header → verwacht 401
-- [ ] **T7.4** Ownership test: stuur een request met User B's token voor User A's exam → verwacht 403
+- [x] **T7.4** Ownership test: stuur een request met User B's token voor User A's exam → verwacht 403
 - [x] **T7.5** Export test: stuur `GET /functions/v1/export?exam_id=...&format=csv` → verifieer dat response Content-Type `text/csv` is en body geldige CSV bevat met kolommen voor stam, scores, flags
 
 ---
@@ -287,8 +287,8 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 
 - [x] **T11.1** GitHub Actions workflow runt succesvol: build stap slaagt, deploy stap slaagt
 - [x] **T11.2** De site is bereikbaar op `https://businessdatasolutions.github.io/mc-toetsgenerator/`
-- [ ] **T11.3** SPA routing werkt: navigeer direct naar `https://businessdatasolutions.github.io/mc-toetsgenerator/exams/upload` → de Upload pagina wordt getoond (niet een 404)
-- [ ] **T11.4** Supabase connectie werkt: de login-pagina kan communiceren met Supabase Auth
+- [x] **T11.3** SPA routing werkt: navigeer direct naar `https://businessdatasolutions.github.io/mc-toetsgenerator/exams/upload` → de Upload pagina wordt getoond (niet een 404)
+- [x] **T11.4** Supabase connectie werkt: de login-pagina kan communiceren met Supabase Auth
 
 ---
 
@@ -409,4 +409,4 @@ Gebaseerd op TDD v1.0. Elke hoofdtaak bevat subtaken afgesloten met tests.
 - [x] **T15.1** `docker build` slaagt zonder errors (vereist Docker)
 - [x] **T15.2** Container draait en `/health` retourneert `{"status": "ok"}` (vereist Docker)
 - [x] **T15.3** Productie sidecar is bereikbaar: `curl https://mc-sidecar-990894571821.europe-west1.run.app/health` retourneert 200
-- [ ] **T15.4** End-to-end: trigger analyse via de live site → sidecar verwerkt de vragen → resultaten verschijnen in het dashboard
+- [x] **T15.4** End-to-end: trigger analyse via de live site → sidecar verwerkt de vragen → resultaten verschijnen in het dashboard

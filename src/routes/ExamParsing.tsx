@@ -112,6 +112,30 @@ export default function ExamParsing() {
     )
   }
 
+  const handleDeleteQuestion = (index: number) => {
+    if (!window.confirm(`Vraag ${index + 1} verwijderen?`)) return
+    setQuestions((prev) => prev.filter((_, i) => i !== index))
+    setEditingIndex((prev) => {
+      if (prev === null) return null
+      if (prev === index) return null
+      if (prev > index) return prev - 1
+      return prev
+    })
+  }
+
+  const handleAddQuestion = () => {
+    const newQuestion: ParsedQuestion = {
+      stem: '',
+      options: [0, 1, 2, 3].map((pos) => ({
+        text: '',
+        position: pos,
+        is_correct: pos === 0,
+      })),
+    }
+    setQuestions((prev) => [...prev, newQuestion])
+    setEditingIndex(questions.length)
+  }
+
   const handleSaveAndAnalyze = async () => {
     if (!examId) return
     setSaving(true)
@@ -183,6 +207,7 @@ export default function ExamParsing() {
             <th className="border border-gray-200 px-4 py-2 text-left">Stam</th>
             <th className="border border-gray-200 px-4 py-2 text-center w-24">Opties</th>
             <th className="border border-gray-200 px-4 py-2 text-left w-48">Correct</th>
+            <th className="border border-gray-200 px-4 py-2 w-12"></th>
           </tr>
         </thead>
         <tbody>
@@ -213,6 +238,19 @@ export default function ExamParsing() {
               </td>
               <td className="border border-gray-200 px-4 py-2">
                 {q.options.find((o) => o.is_correct)?.text.slice(0, 30) ?? '-'}
+              </td>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleDeleteQuestion(i)
+                  }}
+                  className="text-gray-400 hover:text-red-600"
+                  title="Vraag verwijderen"
+                  aria-label={`Verwijder vraag ${i + 1}`}
+                >
+                  ✕
+                </button>
               </td>
             </tr>
           ))}
@@ -252,13 +290,21 @@ export default function ExamParsing() {
 
       {error && <p className="text-red-600 mb-4">{error}</p>}
 
-      <button
-        onClick={handleSaveAndAnalyze}
-        disabled={saving || questions.length === 0}
-        className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 disabled:opacity-50"
-      >
-        {saving ? 'Bezig met opslaan...' : 'Opslaan & Analyseren'}
-      </button>
+      <div className="flex gap-3">
+        <button
+          onClick={handleAddQuestion}
+          className="border border-gray-300 text-gray-700 py-2 px-6 rounded-md hover:bg-gray-50"
+        >
+          + Vraag toevoegen
+        </button>
+        <button
+          onClick={handleSaveAndAnalyze}
+          disabled={saving || questions.length === 0}
+          className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 disabled:opacity-50"
+        >
+          {saving ? 'Bezig met opslaan...' : 'Opslaan & Analyseren'}
+        </button>
+      </div>
     </div>
   )
 }
