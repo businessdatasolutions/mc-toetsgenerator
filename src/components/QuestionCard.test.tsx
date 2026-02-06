@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { MemoryRouter } from 'react-router'
 import QuestionCard from './QuestionCard'
 import type { QuestionWithAssessment } from '../hooks/useQuestions'
@@ -53,6 +53,10 @@ const mockQuestion: QuestionWithAssessment = {
 }
 
 describe('QuestionCard', () => {
+  beforeEach(() => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true)
+  })
+
   it('T9.3: renders stem, 3 scores, and Bloom badge', () => {
     render(
       <MemoryRouter>
@@ -91,5 +95,44 @@ describe('QuestionCard', () => {
     expect(screen.getByText('V: -')).toBeInTheDocument()
     // Bloom badge shows "-"
     expect(screen.getByText('-')).toBeInTheDocument()
+  })
+
+  it('TQ.1: no action buttons when callbacks are not provided', () => {
+    render(
+      <MemoryRouter>
+        <QuestionCard question={mockQuestion} examId="exam1" />
+      </MemoryRouter>
+    )
+
+    expect(screen.queryByTitle('Vraag verwijderen')).not.toBeInTheDocument()
+    expect(screen.queryByTitle('Vraag dupliceren')).not.toBeInTheDocument()
+  })
+
+  it('TQ.2: delete and duplicate buttons visible when callbacks are provided', () => {
+    const onDelete = vi.fn()
+    const onDuplicate = vi.fn()
+
+    render(
+      <MemoryRouter>
+        <QuestionCard
+          question={mockQuestion}
+          examId="exam1"
+          onDelete={onDelete}
+          onDuplicate={onDuplicate}
+        />
+      </MemoryRouter>
+    )
+
+    const deleteBtn = screen.getByTitle('Vraag verwijderen')
+    const duplicateBtn = screen.getByTitle('Vraag dupliceren')
+
+    expect(deleteBtn).toBeInTheDocument()
+    expect(duplicateBtn).toBeInTheDocument()
+
+    fireEvent.click(duplicateBtn)
+    expect(onDuplicate).toHaveBeenCalledWith('q1')
+
+    fireEvent.click(deleteBtn)
+    expect(onDelete).toHaveBeenCalledWith('q1')
   })
 })

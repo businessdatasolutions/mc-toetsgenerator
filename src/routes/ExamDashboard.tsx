@@ -17,11 +17,17 @@ interface ScoreSummary {
 
 export default function ExamDashboard() {
   const { exam, loading: examLoading, error: examError, examId } = useExam()
-  const { questions, loading: questionsLoading, refetch } = useQuestions(examId)
+  const { questions, setQuestions, loading: questionsLoading, refetch } = useQuestions(examId)
   const [summary, setSummary] = useState<ScoreSummary | null>(null)
   const [filterMinScore, setFilterMinScore] = useState<number>(0)
   const [filterBloom, setFilterBloom] = useState<BloomLevel | ''>('')
   const [sortBy, setSortBy] = useState<'position' | 'bet' | 'tech' | 'val'>('position')
+  const [actionError, setActionError] = useState<string | null>(null)
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [addStem, setAddStem] = useState('')
+  const [addOptions, setAddOptions] = useState(['', '', '', ''])
+  const [addCorrect, setAddCorrect] = useState(0)
+  const [addSaving, setAddSaving] = useState(false)
 
   // Fetch score summary via RPC (only when analysis is done)
   useEffect(() => {
@@ -43,6 +49,86 @@ export default function ExamDashboard() {
       refetch()
     }
   }, [exam?.analysis_status])
+
+  const refreshSummary = async () => {
+    if (!examId) return
+    const { data } = await supabase.rpc('exam_score_summary', {
+      p_exam_id: examId,
+    })
+    if (data && data.length > 0) {
+      setSummary(data[0] as ScoreSummary)
+    }
+  }
+
+  const handleDeleteQuestion = async (questionId: string) => {
+    setActionError(null)
+    const { error } = await supabase
+      .from('questions')
+      .delete()
+      .eq('id', questionId)
+
+    if (error) {
+      setActionError('Verwijderen mislukt. Probeer het opnieuw.')
+    } else {
+      setQuestions((prev) => prev.filter((q) => q.id !== questionId))
+      refreshSummary()
+    }
+  }
+
+  const handleDuplicateQuestion = async (questionId: string) => {
+    setActionError(null)
+    const source = questions.find((q) => q.id === questionId)
+    if (!source || !examId) return
+
+    const { error } = await supabase.from('questions').insert({
+      exam_id: examId,
+      stem: source.stem,
+      options: source.options,
+      correct_option: source.correct_option,
+      bloom_level: source.bloom_level,
+      learning_goal: source.learning_goal,
+      position: questions.length,
+      version: 1,
+    })
+
+    if (error) {
+      setActionError('Dupliceren mislukt. Probeer het opnieuw.')
+    } else {
+      refetch()
+    }
+  }
+
+  const handleAddQuestion = async () => {
+    if (!examId || !addStem.trim()) return
+    setAddSaving(true)
+    setActionError(null)
+
+    const options = addOptions.map((text, i) => ({
+      text,
+      position: i,
+      is_correct: i === addCorrect,
+    }))
+
+    const { error } = await supabase.from('questions').insert({
+      exam_id: examId,
+      stem: addStem,
+      options,
+      correct_option: addCorrect,
+      position: questions.length,
+      version: 1,
+    })
+
+    if (error) {
+      setActionError('Toevoegen mislukt. Probeer het opnieuw.')
+    } else {
+      setShowAddForm(false)
+      setAddStem('')
+      setAddOptions(['', '', '', ''])
+      setAddCorrect(0)
+      refetch()
+    }
+    setAddSaving(false)
+  }
 
   if (examLoading || questionsLoading) {
     return <p className="text-gray-500">Laden...</p>
@@ -116,6 +202,10 @@ export default function ExamDashboard() {
           Exporteren
         </Link>
       </div>
+
+      {actionError && (
+        <p className="text-red-600 mb-4">{actionError}</p>
+      )}
 
       {isProcessing && (
         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -201,7 +291,13 @@ export default function ExamDashboard() {
           </h2>
           <div className="space-y-2">
             {attentionQuestions.map((q) => (
-              <QuestionCard key={q.id} question={q} examId={examId!} />
+              <QuestionCard
+                key={q.id}
+                question={q}
+                examId={examId!}
+                onDelete={handleDeleteQuestion}
+                onDuplicate={handleDuplicateQuestion}
+              />
             ))}
           </div>
         </div>
@@ -266,7 +362,13 @@ export default function ExamDashboard() {
 
         <div className="space-y-2">
           {sorted.map((q) => (
-            <QuestionCard key={q.id} question={q} examId={examId!} />
+            <QuestionCard
+              key={q.id}
+              question={q}
+              examId={examId!}
+              onDelete={handleDeleteQuestion}
+              onDuplicate={handleDuplicateQuestion}
+            />
           ))}
           {sorted.length === 0 && (
             <p className="text-gray-500 text-sm">
@@ -274,6 +376,77 @@ export default function ExamDashboard() {
             </p>
           )}
         </div>
+
+        {/* Add Question */}
+        {showAddForm ? (
+          <div className="mt-4 p-4 border rounded-lg bg-gray-50">
+            <h3 className="font-medium mb-3">Nieuwe vraag toevoegen</h3>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Stam</label>
+                <textarea
+                  value={addStem}
+                  onChange={(e) => setAddStem(e.target.value)}
+                  className="w-full px-3 py-2 border rounded"
+                  rows={2}
+                  placeholder="Voer de vraagtekst in..."
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Opties</label>
+                {addOptions.map((opt, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="add-correct"
+                      checked={addCorrect === i}
+                      onChange={() => setAddCorrect(i)}
+                    />
+                    <span className="font-mono text-sm">{String.fromCharCode(65 + i)}.</span>
+                    <input
+                      type="text"
+                      value={opt}
+                      onChange={(e) =>
+                        setAddOptions((prev) =>
+                          prev.map((o, j) => (j === i ? e.target.value : o))
+                        )
+                      }
+                      className="flex-1 px-2 py-1 border rounded"
+                      placeholder={`Optie ${String.fromCharCode(65 + i)}`}
+                    />
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleAddQuestion}
+                  disabled={addSaving || !addStem.trim()}
+                  className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {addSaving ? 'Opslaan...' : 'Opslaan'}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowAddForm(false)
+                    setAddStem('')
+                    setAddOptions(['', '', '', ''])
+                    setAddCorrect(0)
+                  }}
+                  className="px-4 py-2 text-sm bg-white text-gray-700 border rounded hover:bg-gray-50"
+                >
+                  Annuleren
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowAddForm(true)}
+            className="mt-4 border border-gray-300 text-gray-700 py-2 px-6 rounded-md hover:bg-gray-50"
+          >
+            + Vraag toevoegen
+          </button>
+        )}
       </div>
     </div>
   )

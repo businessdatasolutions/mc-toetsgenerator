@@ -46,5 +46,5 @@ export function useQuestions(examId: string | undefined) {
     }
   }
 
-  return { questions, loading, error, refetch }
+  return { questions, setQuestions, loading, error, refetch }
 }

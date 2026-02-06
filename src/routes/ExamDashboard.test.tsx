@@ -1,14 +1,16 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router'
 
-const { mockFrom, mockRpc, mockChannel, mockRemoveChannel, mockSubscribe } =
+const { mockFrom, mockRpc, mockChannel, mockRemoveChannel, mockSubscribe, mockDelete, mockInsert } =
   vi.hoisted(() => ({
     mockFrom: vi.fn(),
     mockRpc: vi.fn(),
     mockChannel: vi.fn(),
     mockRemoveChannel: vi.fn(),
     mockSubscribe: vi.fn(() => ({ unsubscribe: vi.fn() })),
+    mockDelete: vi.fn(),
+    mockInsert: vi.fn(),
   }))
 
 vi.mock('../lib/supabase', () => ({
@@ -124,6 +126,9 @@ const mockQuestions = [
 beforeEach(() => {
   vi.clearAllMocks()
 
+  mockDelete.mockResolvedValue({ error: null })
+  mockInsert.mockResolvedValue({ error: null })
+
   mockFrom.mockImplementation((table: string) => {
     if (table === 'exams') {
       return {
@@ -142,6 +147,10 @@ beforeEach(() => {
               Promise.resolve({ data: mockQuestions, error: null }),
           }),
         }),
+        delete: () => ({
+          eq: mockDelete,
+        }),
+        insert: mockInsert,
       }
     }
     return {
@@ -152,6 +161,8 @@ beforeEach(() => {
       }),
     }
   })
+
+  vi.spyOn(window, 'confirm').mockReturnValue(true)
 
   mockRpc.mockResolvedValue({
     data: [{ avg_bet: 3.7, avg_tech: 4.0, avg_val: 4.0 }],
@@ -204,5 +215,102 @@ describe('ExamDashboard', () => {
     renderDashboard()
     await screen.findByText('Test Toets')
     expect(screen.getByText('Aandachtsvragen (1)')).toBeInTheDocument()
+  })
+
+  it('TD.1: shows delete and duplicate buttons per question card', async () => {
+    renderDashboard()
+    await screen.findByText('Test Toets')
+
+    const deleteButtons = screen.getAllByTitle('Vraag verwijderen')
+    const duplicateButtons = screen.getAllByTitle('Vraag dupliceren')
+
+    // q2 appears in both attention and all sections = 4 cards total
+    expect(deleteButtons.length).toBeGreaterThanOrEqual(3)
+    expect(duplicateButtons.length).toBeGreaterThanOrEqual(3)
+  })
+
+  it('TD.2: clicking delete calls supabase delete', async () => {
+    renderDashboard()
+    await screen.findByText('Test Toets')
+
+    const deleteButtons = screen.getAllByTitle('Vraag verwijderen')
+    fireEvent.click(deleteButtons[0])
+
+    await waitFor(() => {
+      expect(mockDelete).toHaveBeenCalled()
+    })
+  })
+
+  it('TD.3: question disappears after successful deletion', async () => {
+    renderDashboard()
+    await screen.findByText('Test Toets')
+
+    // Get the first delete button in the "Alle vragen" section
+    const deleteButtons = screen.getAllByTitle('Vraag verwijderen')
+    fireEvent.click(deleteButtons[0])
+
+    await waitFor(() => {
+      expect(mockDelete).toHaveBeenCalled()
+    })
+  })
+
+  it('TD.4: clicking duplicate calls supabase insert with same fields', async () => {
+    renderDashboard()
+    await screen.findByText('Test Toets')
+
+    const duplicateButtons = screen.getAllByTitle('Vraag dupliceren')
+    fireEvent.click(duplicateButtons[0])
+
+    await waitFor(() => {
+      expect(mockInsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          exam_id: 'exam1',
+          stem: expect.any(String),
+          position: 3,
+          version: 1,
+        })
+      )
+    })
+  })
+
+  it('TD.5: shows "+ Vraag toevoegen" button', async () => {
+    renderDashboard()
+    await screen.findByText('Test Toets')
+
+    expect(screen.getByText('+ Vraag toevoegen')).toBeInTheDocument()
+  })
+
+  it('TD.6: clicking add shows inline form', async () => {
+    renderDashboard()
+    await screen.findByText('Test Toets')
+
+    fireEvent.click(screen.getByText('+ Vraag toevoegen'))
+
+    expect(screen.getByText('Nieuwe vraag toevoegen')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Voer de vraagtekst in...')).toBeInTheDocument()
+    expect(screen.getByText('Annuleren')).toBeInTheDocument()
+  })
+
+  it('TD.7: submitting add form calls supabase insert', async () => {
+    renderDashboard()
+    await screen.findByText('Test Toets')
+
+    fireEvent.click(screen.getByText('+ Vraag toevoegen'))
+
+    const textarea = screen.getByPlaceholderText('Voer de vraagtekst in...')
+    fireEvent.change(textarea, { target: { value: 'Nieuwe test vraag' } })
+
+    fireEvent.click(screen.getByText('Opslaan'))
+
+    await waitFor(() => {
+      expect(mockInsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          exam_id: 'exam1',
+          stem: 'Nieuwe test vraag',
+          position: 3,
+          version: 1,
+        })
+      )
+    })
   })
 })
