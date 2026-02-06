@@ -3,6 +3,11 @@ import { createClient } from "@supabase/supabase-js";
 
 const SIDECAR_URL = Deno.env.get("SIDECAR_URL") ?? "http://localhost:8000";
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
 interface Specification {
   count: number;
   bloom_level: string;
@@ -11,10 +16,14 @@ interface Specification {
 }
 
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
       status: 405,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
@@ -39,7 +48,7 @@ Deno.serve(async (req) => {
         JSON.stringify({
           error: "Invalid or missing material_id (UUID required)",
         }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -52,14 +61,14 @@ Deno.serve(async (req) => {
     ) {
       return new Response(
         JSON.stringify({ error: "Invalid exam_id (UUID required)" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     if (!specification || typeof specification !== "object") {
       return new Response(
         JSON.stringify({ error: "Missing or invalid specification object" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -80,13 +89,13 @@ Deno.serve(async (req) => {
           error:
             "Invalid specification: count (1-20), bloom_level, learning_goal, num_options (3 or 4) required",
         }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
   } catch {
     return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
       status: 400,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
@@ -95,7 +104,7 @@ Deno.serve(async (req) => {
   if (!authHeader) {
     return new Response(
       JSON.stringify({ error: "Missing Authorization header" }),
-      { status: 401, headers: { "Content-Type": "application/json" } }
+      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 
@@ -113,7 +122,7 @@ Deno.serve(async (req) => {
   if (authError || !user) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
@@ -127,14 +136,14 @@ Deno.serve(async (req) => {
   if (materialError || !material) {
     return new Response(JSON.stringify({ error: "Material not found" }), {
       status: 404,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
   if (material.uploaded_by !== user.id) {
     return new Response(
       JSON.stringify({ error: "Forbidden: not the owner of this material" }),
-      { status: 403, headers: { "Content-Type": "application/json" } }
+      { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 
@@ -157,7 +166,7 @@ Deno.serve(async (req) => {
   if (jobError || !job) {
     return new Response(
       JSON.stringify({ error: "Failed to create generation job" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 
@@ -178,6 +187,6 @@ Deno.serve(async (req) => {
       job_id: job.id,
       status: "processing",
     }),
-    { status: 200, headers: { "Content-Type": "application/json" } }
+    { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
   );
 });

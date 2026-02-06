@@ -3,11 +3,20 @@ import { createClient } from "@supabase/supabase-js";
 
 const SIDECAR_URL = Deno.env.get("SIDECAR_URL") ?? "http://localhost:8000";
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
       status: 405,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
@@ -25,13 +34,13 @@ Deno.serve(async (req) => {
     ) {
       return new Response(
         JSON.stringify({ error: "Invalid or missing exam_id (UUID required)" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
   } catch {
     return new Response(
       JSON.stringify({ error: "Invalid JSON body" }),
-      { status: 400, headers: { "Content-Type": "application/json" } }
+      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 
@@ -40,7 +49,7 @@ Deno.serve(async (req) => {
   if (!authHeader) {
     return new Response(
       JSON.stringify({ error: "Missing Authorization header" }),
-      { status: 401, headers: { "Content-Type": "application/json" } }
+      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 
@@ -58,7 +67,7 @@ Deno.serve(async (req) => {
   if (authError || !user) {
     return new Response(
       JSON.stringify({ error: "Unauthorized" }),
-      { status: 401, headers: { "Content-Type": "application/json" } }
+      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 
@@ -72,14 +81,14 @@ Deno.serve(async (req) => {
   if (examError || !exam) {
     return new Response(
       JSON.stringify({ error: "Exam not found" }),
-      { status: 404, headers: { "Content-Type": "application/json" } }
+      { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 
   if (exam.created_by !== user.id) {
     return new Response(
       JSON.stringify({ error: "Forbidden: not the owner of this exam" }),
-      { status: 403, headers: { "Content-Type": "application/json" } }
+      { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 
@@ -116,6 +125,6 @@ Deno.serve(async (req) => {
       status: "processing",
       question_count: count ?? 0,
     }),
-    { status: 200, headers: { "Content-Type": "application/json" } }
+    { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
   );
 });
