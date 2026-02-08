@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { useExam } from '../hooks/useExam'
 import { useQuestions } from '../hooks/useQuestions'
 import type { QuestionWithAssessment } from '../hooks/useQuestions'
@@ -16,9 +16,11 @@ interface ScoreSummary {
 }
 
 export default function ExamDashboard() {
+  const location = useLocation()
   const { exam, loading: examLoading, error: examError, examId } = useExam()
   const { questions, setQuestions, loading: questionsLoading, refetch } = useQuestions(examId)
   const [summary, setSummary] = useState<ScoreSummary | null>(null)
+  const [showToast, setShowToast] = useState(false)
   const [filterMinScore, setFilterMinScore] = useState<number>(0)
   const [filterBloom, setFilterBloom] = useState<BloomLevel | ''>('')
   const [sortBy, setSortBy] = useState<'position' | 'bet' | 'tech' | 'val'>('position')
@@ -50,6 +52,16 @@ export default function ExamDashboard() {
       refetch()
     }
   }, [exam?.analysis_status])
+
+  // Show success toast when arriving from auto-validated upload
+  useEffect(() => {
+    if ((location.state as { validationSuccess?: boolean })?.validationSuccess) {
+      setShowToast(true)
+      window.history.replaceState({}, '')
+      const timer = setTimeout(() => setShowToast(false), 4000)
+      return () => clearTimeout(timer)
+    }
+  }, [])
 
   const refreshSummary = async () => {
     if (!examId) return
@@ -256,6 +268,11 @@ export default function ExamDashboard() {
 
   return (
     <div className="max-w-6xl mx-auto">
+      {showToast && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg transition-opacity">
+          Validatie geslaagd — analyse wordt gestart
+        </div>
+      )}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">{exam.title}</h1>

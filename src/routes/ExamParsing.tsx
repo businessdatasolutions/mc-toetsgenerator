@@ -89,8 +89,12 @@ export default function ExamParsing() {
         }))
         setQuestions(withIds)
 
-        // Auto-validate immediately after parsing
-        await handleValidate(withIds)
+        // Auto-validate immediately after parsing; skip to analysis if all valid
+        const result = await handleValidate(withIds)
+        if (result?.is_valid) {
+          await handleSaveAndAnalyze(withIds)
+          return
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Er is een fout opgetreden')
       } finally {
@@ -180,7 +184,7 @@ export default function ExamParsing() {
     setEditingIndex(questions.length)
   }
 
-  const handleValidate = async (questionsToValidate?: ParsedQuestion[]) => {
+  const handleValidate = async (questionsToValidate?: ParsedQuestion[]): Promise<ValidationResponse | null> => {
     const qs = questionsToValidate ?? questions
     setValidating(true)
     setError(null)
@@ -199,8 +203,10 @@ export default function ExamParsing() {
       const result: ValidationResponse = await response.json()
       setValidationResult(result)
       setValidationDirty(false)
+      return result
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Validatie mislukt')
+      return null
     } finally {
       setValidating(false)
     }
@@ -293,13 +299,14 @@ export default function ExamParsing() {
     setRepairSelections({})
   }
 
-  const handleSaveAndAnalyze = async () => {
+  const handleSaveAndAnalyze = async (questionsToSave?: ParsedQuestion[]) => {
     if (!examId) return
+    const qs = questionsToSave ?? questions
     setSaving(true)
     setError(null)
 
     try {
-      const questionRows = questions.map((q, i) => ({
+      const questionRows = qs.map((q, i) => ({
         exam_id: examId,
         stem: q.stem,
         options: q.options,
@@ -335,7 +342,7 @@ export default function ExamParsing() {
         )
       }
 
-      navigate(`/exams/${examId}`)
+      navigate(`/exams/${examId}`, { state: { validationSuccess: true } })
     } catch (err) {
       setError(
         err instanceof Error
@@ -726,7 +733,7 @@ export default function ExamParsing() {
           {validating ? 'Bezig met valideren...' : 'Valideren'}
         </button>
         <button
-          onClick={handleSaveAndAnalyze}
+          onClick={() => handleSaveAndAnalyze()}
           disabled={saving || !canSave}
           className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 disabled:opacity-50"
           title={
