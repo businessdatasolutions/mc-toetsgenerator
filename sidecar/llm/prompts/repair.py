@@ -2,11 +2,11 @@ import json
 
 SYSTEM_PROMPT_REPAIR = (
     "Je bent een expert in toetsdidactiek voor het Nederlands hoger onderwijs. "
-    "Je helpt docenten bij het aanvullen van ontbrekende metadata bij MC-vragen. "
-    "Je analyseert de vraagstam en antwoordopties om te bepalen welk onderwerp "
-    "of categorie de vraag behandelt, welk Bloom-niveau de vraag meet, en welk "
-    "leerdoel erbij past. Geef altijd een korte toelichting in het Nederlands "
-    "bij je voorstel."
+    "Je helpt docenten bij het repareren en aanvullen van MC-vragen. "
+    "Je kunt:\n"
+    "- Een ontbrekende vraagstam reconstrueren op basis van de antwoordopties.\n"
+    "- Een onderwerpcategorie, Bloom-niveau of leerdoel afleiden uit de vraag.\n"
+    "Geef altijd een korte toelichting in het Nederlands bij je voorstel."
 )
 
 
@@ -55,10 +55,15 @@ def build_repair_prompt(
     user_content = (
         "<instructie>\n"
         "Analyseer de onderstaande MC-vragen en genereer voorstellen om de "
-        "ontbrekende velden aan te vullen. Focus op de velden die als 'missing' "
-        "zijn gemarkeerd. Gebruik de vraagstam en antwoordopties om het onderwerp, "
-        "Bloom-niveau en leerdoel af te leiden.\n\n"
-        "Bloom-niveaus: onthouden, begrijpen, toepassen, analyseren\n"
+        "ontbrekende of foutieve velden te repareren. Focus op de velden die in "
+        "'missing_fields' en 'error_messages' staan.\n\n"
+        "Mogelijke reparaties:\n"
+        "- stem: Als de vraagstam leeg is, reconstrueer een passende vraag op "
+        "basis van de antwoordopties. Gebruik field='stem'.\n"
+        "- category: Leid de onderwerpcategorie af uit de vraag.\n"
+        "- bloom_level: Bepaal het cognitieve niveau "
+        "(onthouden, begrijpen, toepassen, analyseren).\n"
+        "- learning_goal: Formuleer een passend leerdoel.\n"
         "</instructie>\n\n"
         f"<questions_needing_repair>\n"
         f"{json.dumps(repair_items, ensure_ascii=False, indent=2)}\n"

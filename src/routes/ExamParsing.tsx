@@ -248,7 +248,9 @@ export default function ExamParsing() {
         const q = updated[proposal.question_index]
         if (!q) continue
 
-        if (proposal.field === 'category') {
+        if (proposal.field === 'stem') {
+          q.stem = proposal.proposed_value
+        } else if (proposal.field === 'category') {
           q.category = proposal.proposed_value
         } else if (proposal.field === 'bloom_level') {
           q.bloom_level = proposal.proposed_value
