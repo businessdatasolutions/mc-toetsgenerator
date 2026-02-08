@@ -10,3 +10,7 @@ class ParsedOption(BaseModel):
 class ParsedQuestion(BaseModel):
     stem: str
     options: list[ParsedOption]
+    question_id: str | None = None
+    category: str | None = None
+    bloom_level: str | None = None
+    learning_goal: str | None = None

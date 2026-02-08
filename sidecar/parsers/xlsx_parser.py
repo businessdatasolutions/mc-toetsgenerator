@@ -7,6 +7,13 @@ from .schemas import ParsedOption, ParsedQuestion
 OPTION_COLUMNS = ["optie_a", "optie_b", "optie_c", "optie_d"]
 OPTION_LABELS = ["A", "B", "C", "D"]
 REQUIRED_COLUMNS = {"stam", "optie_a", "optie_b", "optie_c", "optie_d", "correct"}
+OPTIONAL_COLUMNS = {
+    "categorie": "category",
+    "bloom_niveau": "bloom_level",
+    "leerdoel": "learning_goal",
+    "vraag_id": "question_id",
+    "id": "question_id",
+}
 
 
 def parse_xlsx(content: bytes) -> list[ParsedQuestion]:
@@ -53,7 +60,19 @@ def parse_xlsx(content: bytes) -> list[ParsedQuestion]:
                 )
             )
 
-        questions.append(ParsedQuestion(stem=stem, options=options))
+        # Read optional columns
+        extra: dict[str, str | None] = {}
+        for xlsx_col, field_name in OPTIONAL_COLUMNS.items():
+            if xlsx_col in col_idx and field_name not in extra:
+                val = str(row[col_idx[xlsx_col]] or "").strip()
+                if val:
+                    extra[field_name] = val
+
+        # Auto-assign question_id from row number if not in file
+        if "question_id" not in extra:
+            extra["question_id"] = str(row_num - 1)
+
+        questions.append(ParsedQuestion(stem=stem, options=options, **extra))
 
     wb.close()
     return questions

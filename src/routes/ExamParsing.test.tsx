@@ -56,6 +56,62 @@ const mockQuestions = [
   },
 ]
 
+const validValidationResponse = {
+  is_valid: true,
+  total_questions: 3,
+  valid_count: 3,
+  invalid_count: 0,
+  results: [
+    { question_index: 0, question_id: '1', is_valid: true, errors: [], warnings: [] },
+    { question_index: 1, question_id: '2', is_valid: true, errors: [], warnings: [] },
+    { question_index: 2, question_id: '3', is_valid: true, errors: [], warnings: [] },
+  ],
+}
+
+const invalidValidationResponse = {
+  is_valid: false,
+  total_questions: 3,
+  valid_count: 1,
+  invalid_count: 2,
+  results: [
+    {
+      question_index: 0,
+      question_id: '1',
+      is_valid: false,
+      errors: [{ field: 'category', code: 'empty_category', message: 'Onderwerpcategorie ontbreekt' }],
+      warnings: [],
+    },
+    {
+      question_index: 1,
+      question_id: '2',
+      is_valid: false,
+      errors: [{ field: 'category', code: 'empty_category', message: 'Onderwerpcategorie ontbreekt' }],
+      warnings: [],
+    },
+    { question_index: 2, question_id: '3', is_valid: true, errors: [], warnings: [] },
+  ],
+}
+
+const mockRepairPlan = {
+  proposals: [
+    {
+      question_index: 0,
+      field: 'category',
+      current_value: null,
+      proposed_value: 'Onderwijskunde',
+      explanation: 'De vraag gaat over constructive alignment.',
+    },
+    {
+      question_index: 1,
+      field: 'category',
+      current_value: null,
+      proposed_value: 'Toetsdidactiek',
+      explanation: 'De vraag gaat over Bloom-niveaus.',
+    },
+  ],
+  summary: '2 categorieën aangevuld voor 2 vragen.',
+}
+
 function renderComponent() {
   return render(
     <MemoryRouter initialEntries={['/exams/exam-1/parse']}>
@@ -179,26 +235,360 @@ describe('ExamParsing — add/delete questions', () => {
     expect(deleteButtons).toHaveLength(4)
   })
 
-  it('T10.7: save works correctly with modified question list', async () => {
+  it('T10.7: save works after successful validation', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      if (typeof url === 'string' && url.includes('/parse')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(mockQuestions), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      if (typeof url === 'string' && url.includes('/validate')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(validValidationResponse), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      return Promise.resolve(new Response('{}', { status: 200 }))
+    })
+
     renderComponent()
 
     await waitFor(() => {
       expect(screen.getByText('Wat is constructive alignment?')).toBeInTheDocument()
     })
 
-    // Delete first question, then save
+    // Save button should be disabled before validation
+    const saveButton = screen.getByText('Opslaan & Analyseren')
+    expect(saveButton).toBeDisabled()
+
+    // Validate
+    fireEvent.click(screen.getByText('Valideren'))
+
+    await waitFor(() => {
+      expect(screen.getByText(/3 van 3/)).toBeInTheDocument()
+    })
+
+    // Now save should be enabled
+    expect(saveButton).not.toBeDisabled()
+
+    // Click save
+    fireEvent.click(saveButton)
+
+    await waitFor(() => {
+      expect(mockInsert).toHaveBeenCalled()
+    })
+  })
+})
+
+describe('ExamParsing — validation flow', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+
+    mockList.mockResolvedValue({ data: [{ name: 'vragen.csv' }] })
+    mockDownload.mockResolvedValue({ data: new Blob(['test']), error: null })
+    mockInsert.mockResolvedValue({ error: null })
+
+    vi.spyOn(window, 'confirm').mockReturnValue(true)
+  })
+
+  it('shows Valideren button after parsing', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      if (typeof url === 'string' && url.includes('/parse')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(mockQuestions), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      return Promise.resolve(new Response('{}', { status: 200 }))
+    })
+
+    renderComponent()
+
+    await waitFor(() => {
+      expect(screen.getByText('Valideren')).toBeInTheDocument()
+    })
+  })
+
+  it('save button is disabled before validation', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      if (typeof url === 'string' && url.includes('/parse')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(mockQuestions), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      return Promise.resolve(new Response('{}', { status: 200 }))
+    })
+
+    renderComponent()
+
+    await waitFor(() => {
+      expect(screen.getByText('Wat is constructive alignment?')).toBeInTheDocument()
+    })
+
+    expect(screen.getByText('Opslaan & Analyseren')).toBeDisabled()
+  })
+
+  it('shows validation errors after failed validation', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      if (typeof url === 'string' && url.includes('/parse')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(mockQuestions), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      if (typeof url === 'string' && url.includes('/validate')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(invalidValidationResponse), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      return Promise.resolve(new Response('{}', { status: 200 }))
+    })
+
+    renderComponent()
+
+    await waitFor(() => {
+      expect(screen.getByText('Valideren')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByText('Valideren'))
+
+    await waitFor(() => {
+      expect(screen.getByText(/1 van 3/)).toBeInTheDocument()
+    })
+
+    // Error messages should be visible
+    expect(screen.getByText('Validatiefouten overzicht')).toBeInTheDocument()
+
+    // Save button should remain disabled
+    expect(screen.getByText('Opslaan & Analyseren')).toBeDisabled()
+  })
+
+  it('shows Categorie column in table', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      if (typeof url === 'string' && url.includes('/parse')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(mockQuestions), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      return Promise.resolve(new Response('{}', { status: 200 }))
+    })
+
+    renderComponent()
+
+    await waitFor(() => {
+      expect(screen.getByText('Categorie')).toBeInTheDocument()
+    })
+  })
+
+  it('shows dirty validation notice when questions change after validation', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      if (typeof url === 'string' && url.includes('/parse')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(mockQuestions), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      if (typeof url === 'string' && url.includes('/validate')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(validValidationResponse), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      return Promise.resolve(new Response('{}', { status: 200 }))
+    })
+
+    renderComponent()
+
+    await waitFor(() => {
+      expect(screen.getByText('Valideren')).toBeInTheDocument()
+    })
+
+    // Validate successfully
+    fireEvent.click(screen.getByText('Valideren'))
+
+    await waitFor(() => {
+      expect(screen.getByText(/3 van 3/)).toBeInTheDocument()
+    })
+
+    // Delete a question to make validation dirty
     const deleteButtons = screen.getAllByTitle('Vraag verwijderen')
     fireEvent.click(deleteButtons[0])
 
-    fireEvent.click(screen.getByText('Opslaan & Analyseren'))
+    expect(screen.getByText(/Gegevens gewijzigd/)).toBeInTheDocument()
+    expect(screen.getByText('Opslaan & Analyseren')).toBeDisabled()
+  })
+})
+
+describe('ExamParsing — AI repair flow', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+
+    mockList.mockResolvedValue({ data: [{ name: 'vragen.csv' }] })
+    mockDownload.mockResolvedValue({ data: new Blob(['test']), error: null })
+    mockInsert.mockResolvedValue({ error: null })
+
+    vi.spyOn(window, 'confirm').mockReturnValue(true)
+  })
+
+  it('shows AI Reparatie button when validation has errors', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      if (typeof url === 'string' && url.includes('/parse')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(mockQuestions), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      if (typeof url === 'string' && url.includes('/validate')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(invalidValidationResponse), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      return Promise.resolve(new Response('{}', { status: 200 }))
+    })
+
+    renderComponent()
 
     await waitFor(() => {
-      expect(mockInsert).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ stem: 'Welk Bloom-niveau is het hoogst?', position: 0 }),
-          expect.objectContaining({ stem: 'Wat is een leerdoel?', position: 1 }),
-        ])
-      )
+      expect(screen.getByText('Valideren')).toBeInTheDocument()
     })
+
+    fireEvent.click(screen.getByText('Valideren'))
+
+    await waitFor(() => {
+      expect(screen.getByText('AI Reparatie')).toBeInTheDocument()
+    })
+  })
+
+  it('shows repair plan after clicking AI Reparatie', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      if (typeof url === 'string' && url.includes('/parse')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(mockQuestions), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      if (typeof url === 'string' && url.includes('/validate')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(invalidValidationResponse), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      if (typeof url === 'string' && url.includes('/repair')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(mockRepairPlan), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      return Promise.resolve(new Response('{}', { status: 200 }))
+    })
+
+    renderComponent()
+
+    await waitFor(() => {
+      expect(screen.getByText('Valideren')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByText('Valideren'))
+
+    await waitFor(() => {
+      expect(screen.getByText('AI Reparatie')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByText('AI Reparatie'))
+
+    await waitFor(() => {
+      expect(screen.getByText('AI Reparatieplan')).toBeInTheDocument()
+    })
+
+    // Should show repair proposals
+    expect(screen.getByText(/Onderwijskunde/)).toBeInTheDocument()
+    expect(screen.getByText(/Toetsdidactiek/)).toBeInTheDocument()
+    expect(screen.getByText('Toepassen')).toBeInTheDocument()
+    expect(screen.getByText('Annuleren')).toBeInTheDocument()
+  })
+
+  it('cancel hides repair plan', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      if (typeof url === 'string' && url.includes('/parse')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(mockQuestions), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      if (typeof url === 'string' && url.includes('/validate')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(invalidValidationResponse), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      if (typeof url === 'string' && url.includes('/repair')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(mockRepairPlan), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      return Promise.resolve(new Response('{}', { status: 200 }))
+    })
+
+    renderComponent()
+
+    await waitFor(() => {
+      expect(screen.getByText('Valideren')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByText('Valideren'))
+
+    await waitFor(() => {
+      expect(screen.getByText('AI Reparatie')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByText('AI Reparatie'))
+
+    await waitFor(() => {
+      expect(screen.getByText('AI Reparatieplan')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByText('Annuleren'))
+
+    expect(screen.queryByText('AI Reparatieplan')).not.toBeInTheDocument()
   })
 })

@@ -69,3 +69,20 @@ class GeneratedQuestion(BaseModel):
 
 class GenerationResult(BaseModel):
     questions: list[GeneratedQuestion]
+
+
+class RepairProposal(BaseModel):
+    """A single AI-proposed repair for a missing field."""
+
+    question_index: int
+    field: str
+    current_value: str | None = None
+    proposed_value: str
+    explanation: str
+
+
+class RepairPlan(BaseModel):
+    """AI-generated repair plan for all questions with missing fields."""
+
+    proposals: list[RepairProposal]
+    summary: str

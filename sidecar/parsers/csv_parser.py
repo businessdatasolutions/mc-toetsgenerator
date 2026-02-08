@@ -6,6 +6,13 @@ from .schemas import ParsedOption, ParsedQuestion
 REQUIRED_COLUMNS = {"stam", "optie_a", "optie_b", "optie_c", "optie_d", "correct"}
 OPTION_COLUMNS = ["optie_a", "optie_b", "optie_c", "optie_d"]
 OPTION_LABELS = ["A", "B", "C", "D"]
+OPTIONAL_COLUMNS = {
+    "categorie": "category",
+    "bloom_niveau": "bloom_level",
+    "leerdoel": "learning_goal",
+    "vraag_id": "question_id",
+    "id": "question_id",
+}
 
 
 def _detect_delimiter(content: str) -> str:
@@ -70,6 +77,18 @@ def parse_csv(content: str | bytes) -> list[ParsedQuestion]:
                 )
             )
 
-        questions.append(ParsedQuestion(stem=stem, options=options))
+        # Read optional columns
+        extra: dict[str, str | None] = {}
+        for csv_col, field_name in OPTIONAL_COLUMNS.items():
+            if csv_col in fieldnames and field_name not in extra:
+                val = row.get(csv_col, "")
+                if val and val.strip():
+                    extra[field_name] = val.strip()
+
+        # Auto-assign question_id from row number if not in file
+        if "question_id" not in extra:
+            extra["question_id"] = str(row_num - 1)
+
+        questions.append(ParsedQuestion(stem=stem, options=options, **extra))
 
     return questions

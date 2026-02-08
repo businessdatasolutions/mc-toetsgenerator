@@ -7,6 +7,8 @@ from pydantic import BaseModel
 from llm.client import LLMClient
 from parsers.csv_parser import parse_csv
 from parsers.docx_parser import parse_docx
+from parsers.schemas import ParsedQuestion
+from parsers.validation import ValidationResponse, validate_questions
 from parsers.xlsx_parser import parse_xlsx
 from services.embedding_pipeline import run_embedding
 from services.generation_pipeline import run_generation
@@ -25,6 +27,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+class ValidateRequest(BaseModel):
+    questions: list[dict]
+
+
+class RepairRequest(BaseModel):
+    questions: list[dict]
+    validation: dict
 
 
 class AnalyzeRequest(BaseModel):
@@ -82,6 +93,24 @@ async def generate(request: GenerateRequest, background_tasks: BackgroundTasks):
         run_generation(request.job_id),
     )
     return {"status": "processing", "job_id": request.job_id}
+
+
+@app.post("/validate")
+async def validate(request: ValidateRequest) -> ValidationResponse:
+    """Validate parsed questions for completeness before saving."""
+    parsed = [ParsedQuestion.model_validate(q) for q in request.questions]
+    return validate_questions(parsed)
+
+
+@app.post("/repair")
+async def repair(request: RepairRequest):
+    """Generate AI repair proposals for questions with missing fields."""
+    llm_client = LLMClient()
+    try:
+        plan = llm_client.repair_questions(request.questions, request.validation)
+        return plan.model_dump()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/parse")

@@ -2,8 +2,9 @@ import anthropic
 
 from config.settings import settings
 from llm.prompts.generation import build_generation_prompt
+from llm.prompts.repair import build_repair_prompt
 from llm.prompts.validation import build_validation_prompt
-from llm.schemas import GenerationResult, ValidationResult
+from llm.schemas import GenerationResult, RepairPlan, ValidationResult
 
 
 class LLMValidationError(Exception):
@@ -127,6 +128,60 @@ class LLMClient:
         for block in response.content:
             if block.type == "tool_use" and block.name == "generation_result":
                 return GenerationResult.model_validate(block.input)
+
+        raise LLMValidationError(
+            f"Unexpected response structure from LLM. "
+            f"Stop reason: {response.stop_reason}"
+        )
+
+    def repair_questions(
+        self,
+        questions: list[dict],
+        validation: dict,
+        model: str | None = None,
+    ) -> RepairPlan:
+        """Generate repair proposals for questions with missing fields.
+
+        Args:
+            questions: List of parsed question dicts.
+            validation: Validation response dict with error details.
+            model: Model to use (defaults to Haiku for cost efficiency).
+
+        Returns:
+            RepairPlan with proposals for filling missing fields.
+
+        Raises:
+            LLMValidationError: If the LLM refuses or hits max tokens.
+        """
+        messages = build_repair_prompt(questions, validation)
+        system_msg = messages[0]["content"]
+        user_msg = messages[1]["content"]
+
+        response = self.client.messages.create(
+            model=model or self.MODEL_HAIKU,
+            max_tokens=4096,
+            temperature=0.3,
+            system=system_msg,
+            messages=[{"role": "user", "content": user_msg}],
+            tools=[
+                {
+                    "name": "repair_plan",
+                    "description": "Output the repair plan with proposals for missing fields.",
+                    "input_schema": RepairPlan.model_json_schema(),
+                }
+            ],
+            tool_choice={"type": "tool", "name": "repair_plan"},
+        )
+
+        if response.stop_reason == "max_tokens":
+            raise LLMValidationError(
+                "LLM response was truncated (max_tokens reached). "
+                "Try repairing fewer questions at a time."
+            )
+
+        for block in response.content:
+            if block.type == "tool_use" and block.name == "repair_plan":
+                return RepairPlan.model_validate(block.input)
 
         raise LLMValidationError(
             f"Unexpected response structure from LLM. "

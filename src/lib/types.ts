@@ -32,6 +32,7 @@ export interface Question {
   correct_option: number
   bloom_level: BloomLevel | null
   learning_goal: string | null
+  category: string | null
   version: number
   source: QuestionSource
   created_at: string
@@ -104,4 +105,41 @@ export interface GenerationJob {
   error_message: string | null
   created_at: string
   completed_at: string | null
+}
+
+// Preprocessing validation types (Issue #3)
+
+export interface FieldError {
+  field: string
+  code: string
+  message: string
+}
+
+export interface QuestionValidationResult {
+  question_index: number
+  question_id: string
+  is_valid: boolean
+  errors: FieldError[]
+  warnings: FieldError[]
+}
+
+export interface ValidationResponse {
+  is_valid: boolean
+  total_questions: number
+  valid_count: number
+  invalid_count: number
+  results: QuestionValidationResult[]
+}
+
+export interface RepairProposal {
+  question_index: number
+  field: string
+  current_value: string | null
+  proposed_value: string
+  explanation: string
+}
+
+export interface RepairPlan {
+  proposals: RepairProposal[]
+  summary: string
 }
