@@ -50,6 +50,43 @@ class TestCsvParser:
         with pytest.raises(ValueError, match="Ontbrekende kolommen"):
             parse_csv(content)
 
+    def test_empty_stem_row_is_included(self):
+        """Rows with missing stem should be parsed (not skipped) so validation can flag them."""
+        content = (
+            "stam,optie_a,optie_b,optie_c,optie_d,correct\n"
+            "Vraag 1?,A,B,C,D,A\n"
+            ",Opt A,Opt B,Opt C,Opt D,B\n"
+            "Vraag 3?,X,Y,Z,W,C\n"
+        )
+        questions = parse_csv(content)
+        assert len(questions) == 3
+        assert questions[0].stem == "Vraag 1?"
+        assert questions[1].stem == ""
+        assert questions[2].stem == "Vraag 3?"
+
+    def test_invalid_correct_is_not_fatal(self):
+        """Invalid 'correct' value should not crash the parser; validation catches it."""
+        content = (
+            "stam,optie_a,optie_b,optie_c,optie_d,correct\n"
+            "Vraag 1?,A,B,C,D,A\n"
+            "Vraag 2?,X,Y,Z,W,E\n"
+        )
+        questions = parse_csv(content)
+        assert len(questions) == 2
+        # Second question: no option marked correct
+        assert not any(o.is_correct for o in questions[1].options)
+
+    def test_completely_empty_row_is_skipped(self):
+        """A row where all fields are blank should still be skipped."""
+        content = (
+            "stam,optie_a,optie_b,optie_c,optie_d,correct\n"
+            "Vraag 1?,A,B,C,D,A\n"
+            ",,,,, \n"
+            "Vraag 3?,X,Y,Z,W,C\n"
+        )
+        questions = parse_csv(content)
+        assert len(questions) == 2
+
     def test_bytes_input(self):
         content = (FIXTURES / "test_questions.csv").read_bytes()
         questions = parse_csv(content)
@@ -82,6 +119,38 @@ class TestXlsxParser:
         assert questions[0].stem == "Wat is 1+1?"
         assert questions[0].options[1].is_correct  # B = 2
         assert questions[0].options[1].text == "2"
+
+    def test_empty_stem_row_is_included(self):
+        """Rows with missing stem should be parsed (not skipped) so validation can flag them."""
+        from openpyxl import Workbook
+
+        wb = Workbook()
+        ws = wb.active
+        ws.append(["stam", "optie_a", "optie_b", "optie_c", "optie_d", "correct"])
+        ws.append(["Vraag 1?", "A", "B", "C", "D", "A"])
+        ws.append([None, "Opt A", "Opt B", "Opt C", "Opt D", "B"])
+        ws.append(["Vraag 3?", "X", "Y", "Z", "W", "C"])
+
+        buf = io.BytesIO()
+        wb.save(buf)
+        questions = parse_xlsx(buf.getvalue())
+        assert len(questions) == 3
+        assert questions[1].stem == ""
+
+    def test_invalid_correct_is_not_fatal(self):
+        """Invalid 'correct' value should not crash the XLSX parser."""
+        from openpyxl import Workbook
+
+        wb = Workbook()
+        ws = wb.active
+        ws.append(["stam", "optie_a", "optie_b", "optie_c", "optie_d", "correct"])
+        ws.append(["Vraag?", "A", "B", "C", "D", "E"])
+
+        buf = io.BytesIO()
+        wb.save(buf)
+        questions = parse_xlsx(buf.getvalue())
+        assert len(questions) == 1
+        assert not any(o.is_correct for o in questions[0].options)
 
 
 class TestDocxParser:

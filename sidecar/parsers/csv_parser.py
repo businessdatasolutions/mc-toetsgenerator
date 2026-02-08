@@ -56,15 +56,15 @@ def parse_csv(content: str | bytes) -> list[ParsedQuestion]:
     questions: list[ParsedQuestion] = []
     for row_num, row in enumerate(reader, start=2):
         stem = row["stam"].strip()
-        if not stem:
+
+        # Skip completely empty rows (all fields blank)
+        all_values = [row.get(col, "").strip() for col in fieldnames]
+        if not any(all_values):
             continue
 
         correct_label = row["correct"].strip().upper()
         if correct_label not in OPTION_LABELS:
-            raise ValueError(
-                f"Rij {row_num}: ongeldige waarde voor 'correct': '{row['correct']}'. "
-                f"Verwacht: A, B, C of D"
-            )
+            correct_label = ""  # Let validation catch invalid/missing correct
 
         options: list[ParsedOption] = []
         for i, col in enumerate(OPTION_COLUMNS):
@@ -73,7 +73,7 @@ def parse_csv(content: str | bytes) -> list[ParsedQuestion]:
                 ParsedOption(
                     text=text,
                     position=i,
-                    is_correct=(OPTION_LABELS[i] == correct_label),
+                    is_correct=(OPTION_LABELS[i] == correct_label) if correct_label else False,
                 )
             )
 

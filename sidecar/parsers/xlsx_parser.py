@@ -39,15 +39,15 @@ def parse_xlsx(content: bytes) -> list[ParsedQuestion]:
     questions: list[ParsedQuestion] = []
     for row_num, row in enumerate(rows[1:], start=2):
         stem = str(row[col_idx["stam"]] or "").strip()
-        if not stem:
+
+        # Skip completely empty rows (all cells blank)
+        all_values = [str(cell or "").strip() for cell in row]
+        if not any(all_values):
             continue
 
         correct_label = str(row[col_idx["correct"]] or "").strip().upper()
         if correct_label not in OPTION_LABELS:
-            raise ValueError(
-                f"Rij {row_num}: ongeldige waarde voor 'correct': '{correct_label}'. "
-                f"Verwacht: A, B, C of D"
-            )
+            correct_label = ""  # Let validation catch invalid/missing correct
 
         options: list[ParsedOption] = []
         for i, col_name in enumerate(OPTION_COLUMNS):
@@ -56,7 +56,7 @@ def parse_xlsx(content: bytes) -> list[ParsedQuestion]:
                 ParsedOption(
                     text=text,
                     position=i,
-                    is_correct=(OPTION_LABELS[i] == correct_label),
+                    is_correct=(OPTION_LABELS[i] == correct_label) if correct_label else False,
                 )
             )
 
