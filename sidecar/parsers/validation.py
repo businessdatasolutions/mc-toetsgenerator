@@ -29,6 +29,7 @@ class ValidationResponse(BaseModel):
     valid_count: int
     invalid_count: int
     results: list[QuestionValidationResult]
+    warnings: list[str] = []
 
 
 def validate_questions(questions: list[ParsedQuestion]) -> ValidationResponse:
@@ -39,12 +40,12 @@ def validate_questions(questions: list[ParsedQuestion]) -> ValidationResponse:
     - At least 2 options
     - Exactly 1 correct answer
     - No empty option texts
-    - Category must be present
 
     Rules across questions:
     - Question IDs must be unique
 
     Warnings:
+    - Category missing
     - Only 2 options (prefer 3-4)
     """
     results: list[QuestionValidationResult] = []
@@ -113,9 +114,9 @@ def validate_questions(questions: list[ParsedQuestion]) -> ValidationResponse:
                     )
                 )
 
-        # Category present
+        # Category present (warning only — not required for analysis)
         if not q.category or not q.category.strip():
-            errors.append(
+            warnings.append(
                 FieldError(
                     field="category",
                     code="empty_category",
@@ -154,10 +155,24 @@ def validate_questions(questions: list[ParsedQuestion]) -> ValidationResponse:
         )
 
     valid_count = sum(1 for r in results if r.is_valid)
+
+    # Top-level summary warnings
+    top_warnings: list[str] = []
+    missing_cat = sum(
+        1
+        for r in results
+        if any(w.code == "empty_category" for w in r.warnings)
+    )
+    if missing_cat > 0:
+        top_warnings.append(
+            f"{missing_cat} van {len(results)} vragen hebben geen onderwerpcategorie"
+        )
+
     return ValidationResponse(
         is_valid=valid_count == len(results),
         total_questions=len(results),
         valid_count=valid_count,
         invalid_count=len(results) - valid_count,
         results=results,
+        warnings=top_warnings,
     )

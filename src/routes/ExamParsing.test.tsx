@@ -78,18 +78,31 @@ const invalidValidationResponse = {
       question_index: 0,
       question_id: '1',
       is_valid: false,
-      errors: [{ field: 'category', code: 'empty_category', message: 'Onderwerpcategorie ontbreekt' }],
+      errors: [{ field: 'correct_option', code: 'no_correct', message: 'Geen correct antwoord aangeduid' }],
       warnings: [],
     },
     {
       question_index: 1,
       question_id: '2',
       is_valid: false,
-      errors: [{ field: 'category', code: 'empty_category', message: 'Onderwerpcategorie ontbreekt' }],
+      errors: [{ field: 'stem', code: 'empty_stem', message: 'Vraagstam is leeg' }],
       warnings: [],
     },
     { question_index: 2, question_id: '3', is_valid: true, errors: [], warnings: [] },
   ],
+}
+
+const validWithCategoryWarnings = {
+  is_valid: true,
+  total_questions: 3,
+  valid_count: 3,
+  invalid_count: 0,
+  results: [
+    { question_index: 0, question_id: '1', is_valid: true, errors: [], warnings: [{ field: 'category', code: 'empty_category', message: 'Onderwerpcategorie ontbreekt' }] },
+    { question_index: 1, question_id: '2', is_valid: true, errors: [], warnings: [{ field: 'category', code: 'empty_category', message: 'Onderwerpcategorie ontbreekt' }] },
+    { question_index: 2, question_id: '3', is_valid: true, errors: [], warnings: [] },
+  ],
+  warnings: ['2 van 3 vragen hebben geen onderwerpcategorie'],
 }
 
 const mockRepairPlan = {
@@ -396,6 +409,43 @@ describe('ExamParsing — validation flow', () => {
     await waitFor(() => {
       expect(screen.getByText('Categorie')).toBeInTheDocument()
     })
+  })
+
+  it('shows category warning banner when categories are missing', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      if (typeof url === 'string' && url.includes('/parse')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(mockQuestions), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      if (typeof url === 'string' && url.includes('/validate')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(validWithCategoryWarnings), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+      return Promise.resolve(new Response('{}', { status: 200 }))
+    })
+
+    renderComponent()
+
+    await waitFor(() => {
+      expect(screen.getByText('Valideren')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByText('Valideren'))
+
+    await waitFor(() => {
+      expect(screen.getByText(/2 van 3 vragen hebben geen onderwerpcategorie/)).toBeInTheDocument()
+    })
+
+    // Save button should be enabled (warnings don't block)
+    expect(screen.getByText('Opslaan & Analyseren')).not.toBeDisabled()
   })
 
   it('shows dirty validation notice when questions change after validation', async () => {

@@ -129,6 +129,7 @@ export interface ValidationResponse {
   valid_count: number
   invalid_count: number
   results: QuestionValidationResult[]
+  warnings?: string[]
 }
 
 export interface RepairProposal {

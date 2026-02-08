@@ -120,19 +120,31 @@ class TestValidateQuestions:
         assert any(e.code == "empty_option" for e in errors)
         assert any("Optie B" in e.message for e in errors)
 
-    def test_empty_category(self):
-        """Missing category should produce an error."""
+    def test_empty_category_is_warning(self):
+        """Missing category should produce a warning, not an error."""
         questions = [_make_question(category=None)]
         result = validate_questions(questions)
-        assert result.is_valid is False
-        assert any(e.code == "empty_category" for e in result.results[0].errors)
+        assert result.results[0].is_valid is True
+        assert any(w.code == "empty_category" for w in result.results[0].warnings)
+        assert not any(e.code == "empty_category" for e in result.results[0].errors)
 
-    def test_whitespace_category(self):
-        """Whitespace-only category should produce an error."""
+    def test_whitespace_category_is_warning(self):
+        """Whitespace-only category should produce a warning, not an error."""
         questions = [_make_question(category="   ")]
         result = validate_questions(questions)
-        assert result.is_valid is False
-        assert any(e.code == "empty_category" for e in result.results[0].errors)
+        assert result.results[0].is_valid is True
+        assert any(w.code == "empty_category" for w in result.results[0].warnings)
+
+    def test_missing_category_summary_warning(self):
+        """Top-level warnings should contain summary for missing categories."""
+        questions = [
+            _make_question(category=None, question_id="1"),
+            _make_question(category="Wiskunde", question_id="2"),
+            _make_question(category=None, question_id="3"),
+        ]
+        result = validate_questions(questions)
+        assert len(result.warnings) == 1
+        assert "2 van 3" in result.warnings[0]
 
     def test_duplicate_question_ids(self):
         """Duplicate question IDs should produce errors on both questions."""
@@ -193,7 +205,9 @@ class TestValidateQuestions:
         assert "empty_stem" in error_codes
         assert "no_correct" in error_codes
         assert "empty_option" in error_codes
-        assert "empty_category" in error_codes
+        # empty_category is a warning, not an error
+        warnings = result.results[0].warnings
+        assert any(w.code == "empty_category" for w in warnings)
 
     def test_mixed_valid_and_invalid(self):
         """Mix of valid and invalid questions should report correct counts."""

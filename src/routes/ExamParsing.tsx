@@ -375,6 +375,20 @@ export default function ExamParsing() {
         </div>
       )}
 
+      {/* Top-level warnings banner */}
+      {validationResult &&
+        !validationDirty &&
+        validationResult.warnings &&
+        validationResult.warnings.length > 0 && (
+          <div className="mb-4 p-3 rounded-lg border bg-amber-50 border-amber-200 text-amber-800">
+            {validationResult.warnings.map((w, i) => (
+              <p key={i} className="text-sm">
+                {w}
+              </p>
+            ))}
+          </div>
+        )}
+
       {/* Dirty validation notice */}
       {validationDirty && (
         <div className="mb-4 p-3 rounded-lg border bg-yellow-50 border-yellow-200 text-yellow-800">
