@@ -256,6 +256,21 @@ export default function ExamParsing() {
           q.bloom_level = proposal.proposed_value
         } else if (proposal.field === 'learning_goal') {
           q.learning_goal = proposal.proposed_value
+        } else if (proposal.field.startsWith('option_')) {
+          const optIndex = 'abcd'.indexOf(proposal.field.slice(-1))
+          if (optIndex >= 0 && optIndex < q.options.length) {
+            q.options = q.options.map((o, j) =>
+              j === optIndex ? { ...o, text: proposal.proposed_value } : o
+            )
+          }
+        } else if (proposal.field === 'correct_option') {
+          const correctIndex = 'ABCD'.indexOf(proposal.proposed_value.toUpperCase())
+          if (correctIndex >= 0 && correctIndex < q.options.length) {
+            q.options = q.options.map((o, j) => ({
+              ...o,
+              is_correct: j === correctIndex,
+            }))
+          }
         }
       }
       return updated
@@ -288,7 +303,7 @@ export default function ExamParsing() {
         position: i,
         version: 1,
         category: q.category || null,
-        bloom_level: q.bloom_level || null,
+        bloom_level: q.bloom_level?.toLowerCase() || null,
         learning_goal: q.learning_goal || null,
       }))
 
@@ -318,7 +333,13 @@ export default function ExamParsing() {
 
       navigate(`/exams/${examId}`)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Opslaan mislukt')
+      setError(
+        err instanceof Error
+          ? err.message
+          : typeof err === 'object' && err !== null && 'message' in err
+            ? (err as { message: string }).message
+            : 'Opslaan mislukt'
+      )
     } finally {
       setSaving(false)
     }
