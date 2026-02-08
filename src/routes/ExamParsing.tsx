@@ -88,6 +88,9 @@ export default function ExamParsing() {
           question_id: q.question_id ?? String(i + 1),
         }))
         setQuestions(withIds)
+
+        // Auto-validate immediately after parsing
+        await handleValidate(withIds)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Er is een fout opgetreden')
       } finally {
@@ -177,14 +180,15 @@ export default function ExamParsing() {
     setEditingIndex(questions.length)
   }
 
-  const handleValidate = async () => {
+  const handleValidate = async (questionsToValidate?: ParsedQuestion[]) => {
+    const qs = questionsToValidate ?? questions
     setValidating(true)
     setError(null)
     try {
       const response = await fetch(`${SIDECAR_URL}/validate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ questions }),
+        body: JSON.stringify({ questions: qs }),
       })
 
       if (!response.ok) {
@@ -356,7 +360,7 @@ export default function ExamParsing() {
     questions.length > 0
 
   if (loading) {
-    return <p className="text-gray-500">Bestand wordt verwerkt...</p>
+    return <p className="text-gray-500">{validating ? 'Vragen worden gevalideerd...' : 'Bestand wordt verwerkt...'}</p>
   }
 
   if (error && questions.length === 0) {
@@ -715,7 +719,7 @@ export default function ExamParsing() {
           + Vraag toevoegen
         </button>
         <button
-          onClick={handleValidate}
+          onClick={() => handleValidate()}
           disabled={validating || questions.length === 0}
           className="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700 disabled:opacity-50"
         >
