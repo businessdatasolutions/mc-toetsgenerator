@@ -2,25 +2,26 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router'
 
-const { mockFrom, mockRpc, mockChannel, mockRemoveChannel, mockSubscribe, mockDelete, mockInsert, mockGetSession } =
+const { mockFrom, mockRpc, mockDelete, mockInsert, mockGetSession,
+        mockChannel, mockRemoveChannel, mockSubscribe } =
   vi.hoisted(() => ({
     mockFrom: vi.fn(),
     mockRpc: vi.fn(),
-    mockChannel: vi.fn(),
-    mockRemoveChannel: vi.fn(),
-    mockSubscribe: vi.fn(() => ({ unsubscribe: vi.fn() })),
     mockDelete: vi.fn(),
     mockInsert: vi.fn(),
     mockGetSession: vi.fn(),
+    mockChannel: vi.fn(),
+    mockRemoveChannel: vi.fn(),
+    mockSubscribe: vi.fn(),
   }))
 
 vi.mock('../lib/supabase', () => ({
   supabase: {
     from: mockFrom,
     rpc: mockRpc,
+    auth: { getSession: mockGetSession },
     channel: mockChannel,
     removeChannel: mockRemoveChannel,
-    auth: { getSession: mockGetSession },
   },
 }))
 
@@ -169,6 +170,11 @@ beforeEach(() => {
   mockRpc.mockResolvedValue({
     data: [{ avg_bet: 3.7, avg_tech: 4.0, avg_val: 4.0 }],
     error: null,
+  })
+
+  mockSubscribe.mockImplementation((callback?: Function) => {
+    if (callback) callback('SUBSCRIBED')
+    return { unsubscribe: vi.fn() }
   })
 
   mockChannel.mockReturnValue({
