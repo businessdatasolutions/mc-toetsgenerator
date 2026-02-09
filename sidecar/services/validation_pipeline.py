@@ -18,6 +18,8 @@ async def _validate_single_question(
     llm_client: LLMClient,
     supabase: Client,
     semaphore: asyncio.Semaphore,
+    *,
+    update_progress: bool = True,
 ) -> None:
     """Validate a single question: deterministic + LLM analysis, then write assessment."""
     async with semaphore:
@@ -87,10 +89,11 @@ async def _validate_single_question(
         ).execute()
 
         # Update progress counter (atomic increment via SQL function)
-        supabase.rpc(
-            "increment_questions_analyzed",
-            {"p_exam_id": question_row["exam_id"]},
-        ).execute()
+        if update_progress:
+            supabase.rpc(
+                "increment_questions_analyzed",
+                {"p_exam_id": question_row["exam_id"]},
+            ).execute()
 
 
 async def run_single_validation(
@@ -115,7 +118,9 @@ async def run_single_validation(
             return
 
         semaphore = asyncio.Semaphore(1)
-        await _validate_single_question(question_row, llm_client, supabase, semaphore)
+        await _validate_single_question(
+            question_row, llm_client, supabase, semaphore, update_progress=False
+        )
 
     except Exception as e:
         logger.error(
