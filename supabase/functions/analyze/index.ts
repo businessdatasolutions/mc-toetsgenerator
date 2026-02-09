@@ -123,15 +123,18 @@ Deno.serve(async (req) => {
     sidecarBody.question_id = questionId;
   }
 
-  // 7.2e: Fire-and-forget POST to sidecar
+  // 7.2e: POST to sidecar (must await to ensure request is sent before worker exits)
   try {
-    fetch(`${SIDECAR_URL}/analyze`, {
+    const sidecarResp = await fetch(`${SIDECAR_URL}/analyze`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(sidecarBody),
     });
-  } catch {
-    // Fire-and-forget: don't block on sidecar errors
+    if (!sidecarResp.ok) {
+      console.error(`Sidecar returned ${sidecarResp.status}`);
+    }
+  } catch (err) {
+    console.error("Sidecar fetch failed:", err);
   }
 
   // 7.2f: Return response
