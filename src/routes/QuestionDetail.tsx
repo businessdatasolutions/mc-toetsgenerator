@@ -142,7 +142,7 @@ export default function QuestionDetail() {
           // Check if this is a newer assessment than what we had
           if (
             !assessment ||
-            newAssessment.created_at > assessment.created_at
+            newAssessment.assessed_at > (assessment.assessed_at ?? assessment.created_at)
           ) {
             setAssessment(newAssessment)
             setReassessing(false)

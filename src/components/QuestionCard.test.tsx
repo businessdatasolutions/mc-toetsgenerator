@@ -47,6 +47,7 @@ const mockQuestion: QuestionWithAssessment = {
       val_score: 3,
       val_toelichting: null,
       improvement_suggestions: [],
+      assessed_at: '2024-01-01',
       created_at: '2024-01-01',
     },
   ],

@@ -53,6 +53,7 @@ function makeQuestion(
         val_score: val,
         val_toelichting: null,
         improvement_suggestions: [],
+        assessed_at: '2024-01-01',
         created_at: '2024-01-01',
       },
     ],

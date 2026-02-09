@@ -74,6 +74,7 @@ export interface Assessment {
   // Verbetervoorstellen
   improvement_suggestions: { dimensie: string; suggestie: string }[]
 
+  assessed_at: string
   created_at: string
 }
 

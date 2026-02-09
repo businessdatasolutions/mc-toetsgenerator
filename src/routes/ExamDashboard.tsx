@@ -180,18 +180,18 @@ export default function ExamDashboard() {
       const startTime = Date.now()
       const question = questions.find((q) => q.id === questionId)
       const currentVersion = question?.version ?? 1
-      const oldCreatedAt = question?.assessments?.[0]?.created_at ?? ''
+      const oldAssessedAt = question?.assessments?.[0]?.assessed_at ?? question?.assessments?.[0]?.created_at ?? ''
 
       const poll = setInterval(async () => {
         const { data } = await supabase
           .from('assessments')
-          .select('created_at')
+          .select('assessed_at')
           .eq('question_id', questionId)
           .eq('question_version', currentVersion)
-          .order('created_at', { ascending: false })
+          .order('assessed_at', { ascending: false })
           .limit(1)
 
-        if (data && data.length > 0 && data[0].created_at > oldCreatedAt) {
+        if (data && data.length > 0 && data[0].assessed_at > oldAssessedAt) {
           clearInterval(poll)
           setReassessingId(null)
           refetch()

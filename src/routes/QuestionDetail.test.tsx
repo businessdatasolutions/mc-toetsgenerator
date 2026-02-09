@@ -64,6 +64,7 @@ const mockAssessment = {
     { dimensie: 'betrouwbaarheid', suggestie: 'Verbeter de afleiders' },
     { dimensie: 'validiteit', suggestie: 'Verhoog cognitief niveau' },
   ],
+  assessed_at: '2024-01-01',
   created_at: '2024-01-01',
 }
 

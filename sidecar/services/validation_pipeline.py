@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from datetime import datetime, timezone
 from typing import Any
 
 from supabase import Client
@@ -65,6 +66,7 @@ async def _validate_single_question(
         assessment = {
             "question_id": question_id,
             "question_version": question_version,
+            "assessed_at": datetime.now(timezone.utc).isoformat(),
             **det_result.model_dump(),
             "bet_discriminatie": llm_result.bet_discriminatie.value,
             "bet_ambiguiteit": llm_result.bet_ambiguiteit.value,
