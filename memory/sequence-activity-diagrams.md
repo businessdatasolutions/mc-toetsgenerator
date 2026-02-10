@@ -35,24 +35,24 @@ sequenceDiagram
     Sidecar-->>SPA: ValidationResponse (is_valid, errors)
 
     opt Validation fails — AI repair
-        Educator->>SPA: Click "AI Repair"
+        Educator->>SPA: Click AI Repair
         SPA->>Sidecar: POST /repair (questions, validation)
         Sidecar->>Claude: Repair prompt (tool_choice)
         Claude-->>Sidecar: RepairPlan (proposals)
         Sidecar-->>SPA: RepairPlan
-        Educator->>SPA: Select & apply proposals
+        Educator->>SPA: Select and apply proposals
         SPA->>Sidecar: POST /validate (repaired questions)
         Sidecar-->>SPA: ValidationResponse (is_valid: true)
     end
 
-    Note over Educator,Claude: 4. Save & trigger analysis
-    Educator->>SPA: Click "Opslaan & Analyseer"
+    Note over Educator,Claude: 4. Save and trigger analysis
+    Educator->>SPA: Click Opslaan en Analyseer
     SPA->>DB: INSERT questions (exam_id, stem, options, position)
     SPA->>Edge: POST /analyze {exam_id}
     Edge->>DB: Verify ownership (exams.created_by)
     Edge->>DB: UPDATE exams SET status='processing', question_count=N, questions_analyzed=0
     Edge->>Sidecar: POST /analyze {exam_id} (fire-and-forget)
-    Edge-->>SPA: {status: "processing"}
+    Edge-->>SPA: status: processing
     SPA->>SPA: Navigate to /exams/{examId} (dashboard)
 
     Note over Sidecar,Claude: 5. Background validation pipeline
@@ -87,11 +87,11 @@ sequenceDiagram
     participant Sidecar as Python Sidecar
     participant Claude as Claude API
 
-    Educator->>SPA: Click "Herbeoordeling" on question
+    Educator->>SPA: Click Herbeoordeling on question
     SPA->>Edge: POST /analyze {exam_id, question_id}
     Edge->>DB: Verify ownership
     Edge->>Sidecar: POST /analyze {exam_id, question_id}
-    Edge-->>SPA: {status: "processing"}
+    Edge-->>SPA: status: processing
 
     Sidecar->>DB: SELECT question WHERE id = question_id
     Sidecar->>Sidecar: Deterministic analysis
@@ -177,7 +177,7 @@ sequenceDiagram
     SPA->>Edge: POST /embed-material {material_id}
     Edge->>DB: Verify ownership (materials.uploaded_by)
     Edge->>Sidecar: POST /embed {material_id} (fire-and-forget)
-    Edge-->>SPA: {status: "processing"}
+    Edge-->>SPA: status: processing
 
     Note over Sidecar,Storage: Background embedding pipeline
     Sidecar->>DB: SELECT material (storage_path, mime_type)
@@ -216,7 +216,7 @@ sequenceDiagram
     Edge->>DB: INSERT generation_jobs (specification, status='pending')
     DB-->>Edge: job.id
     Edge->>Sidecar: POST /generate {job_id} (fire-and-forget)
-    Edge-->>SPA: {job_id, status: "processing"}
+    Edge-->>SPA: job_id, status: processing
     SPA->>SPA: Navigate to /generate/{jobId}/review
 
     Note over Sidecar,Claude: Background generation pipeline
@@ -224,7 +224,7 @@ sequenceDiagram
     Sidecar->>DB: UPDATE generation_jobs SET status='processing'
 
     Note over Sidecar,pgvector: RAG retrieval
-    Sidecar->>Embedder: embed_query(learning_goal) with "query: " prefix
+    Sidecar->>Embedder: embed_query(learning_goal) with query prefix
     Embedder-->>Sidecar: query_embedding (768 dims)
     Sidecar->>pgvector: RPC match_chunks(embedding, top_k=10, material_id)
     pgvector-->>Sidecar: Ranked chunks (cosine similarity)
@@ -318,17 +318,17 @@ sequenceDiagram
     participant DB as PostgreSQL
 
     Educator->>SPA: Select export format (CSV / Markdown)
-    SPA->>Edge: GET /export?exam_id={id}&format={fmt} + Bearer token
+    SPA->>Edge: GET /export with exam_id, format + Bearer token
     Edge->>DB: Verify ownership (exams.created_by = auth.uid)
     Edge->>DB: SELECT questions + assessments WHERE exam_id ORDER BY position
     DB-->>Edge: Questions with assessment scores
 
     alt format = csv
-        Edge->>Edge: Generate CSV (Nr, Stam, Correct, Bloom, B/T/V scores, Flags, Suggestions)
-        Edge-->>SPA: Content-Disposition: attachment; filename="title.csv"
+        Edge->>Edge: Generate CSV (Nr, Stam, Correct, Bloom, B/T/V scores, Flags)
+        Edge-->>SPA: Attachment download title.csv
     else format = markdown
-        Edge->>Edge: Generate Markdown (overview table + per-question detail sections)
-        Edge-->>SPA: Content-Disposition: attachment; filename="title.md"
+        Edge->>Edge: Generate Markdown (overview table + per-question details)
+        Edge-->>SPA: Attachment download title.md
     else format = pdf
         Edge-->>SPA: 501 Not Implemented
     end
