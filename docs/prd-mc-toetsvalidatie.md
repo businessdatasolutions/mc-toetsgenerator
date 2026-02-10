@@ -285,17 +285,21 @@ exams {
   course: text
   created_by: uuid                  -- references auth.users(id)
   learning_goals: text[]
-  created_at: timestamptz
+  analysis_status: analysis_status  -- pending|processing|completed|failed
+  question_count: int               -- totaal vragen (voortgangsbalk)
+  questions_analyzed: int           -- geanalyseerd (voortgangsbalk)
 }
 
 questions {
   id: uuid
   exam_id: uuid                     -- references exams(id)
+  position: int                     -- volgorde binnen toets
   stem: text
   options: jsonb                    -- [{text, position, is_correct}]
   correct_option: int
   bloom_level: text                 -- check constraint
   learning_goal: text
+  category: text                    -- onderwerpscategorie
   version: int
   source: text                      -- manual|generated|imported
 }
@@ -303,7 +307,7 @@ questions {
 assessments {
   id: uuid
   question_id: uuid                 -- references questions(id)
-  version: int
+  question_version: int             -- unique constraint met question_id
 
   -- Deterministisch (tech_kwant_*)
   tech_kwant_longest_bias: boolean
@@ -334,23 +338,40 @@ assessments {
 
   -- Verbetering
   improvement_suggestions: jsonb    -- [{dimensie, suggestie}]
+  assessed_at: timestamptz          -- tijdstip laatste beoordeling (herbeoordeling-detectie)
 }
 
 materials {
   id: uuid
+  uploaded_by: uuid                 -- references auth.users(id)
   exam_id: uuid?
   filename: text
+  mime_type: text
   storage_path: text                -- Supabase Storage path
   content_text: text
+  chunk_count: int                  -- aantal chunks na embedding
 }
 
 chunks {
   id: uuid
   material_id: uuid
+  position: int                     -- volgorde binnen materiaal
   text: text
   embedding: vector(768)            -- pgvector, HNSW index (multilingual-e5-base)
   page: int?
   metadata: jsonb
+}
+
+generation_jobs {
+  id: uuid
+  created_by: uuid                  -- references auth.users(id)
+  material_id: uuid?                -- references materials(id)
+  exam_id: uuid?                    -- references exams(id)
+  specification: jsonb              -- {count, bloom_level, learning_goal, num_options}
+  status: analysis_status           -- pending|processing|completed|failed
+  result_question_ids: uuid[]
+  error_message: text
+  completed_at: timestamptz
 }
 ```
 
