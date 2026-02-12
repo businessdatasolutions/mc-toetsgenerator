@@ -223,6 +223,7 @@ export default function ExamDashboard() {
   }
 
   const isProcessing = exam.analysis_status === 'processing'
+  const isUnprocessed = questions.length === 0 && exam.analysis_status === 'pending'
 
   // Filter and sort questions
   const filtered = questions.filter((q) => {
@@ -317,6 +318,25 @@ export default function ExamDashboard() {
         </div>
       )}
 
+      {isUnprocessed && (
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <h3 className="font-medium text-yellow-800 mb-2">
+            Toets nog niet verwerkt
+          </h3>
+          <p className="text-yellow-700 text-sm mb-3">
+            Deze toets is geüpload maar de vragen zijn nog niet gevalideerd en
+            opgeslagen. Ga naar de verwerkingspagina om de vragen te controleren
+            en op te slaan.
+          </p>
+          <Link
+            to={`/exams/${examId}/parse`}
+            className="inline-block bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700 text-sm"
+          >
+            Ga naar verwerking
+          </Link>
+        </div>
+      )}
+
       {/* KPI Cards */}
       {summary && (
         <div className="grid grid-cols-3 gap-4 mb-6">
@@ -391,7 +411,7 @@ export default function ExamDashboard() {
       )}
 
       {/* Filters and Question List */}
-      <div className="mb-6">
+      {!isUnprocessed && <div className="mb-6">
         <h2 className="text-lg font-semibold mb-3">
           Alle vragen ({questions.length})
         </h2>
@@ -536,7 +556,7 @@ export default function ExamDashboard() {
             + Vraag toevoegen
           </button>
         )}
-      </div>
+      </div>}
     </div>
   )
 }
