@@ -13,3 +13,24 @@ Kun je voor P2 een overzicht geven van alle lesmodules, zodat een docent die in 
 - Welke onderwerpen / theorieen / modellen / etc worden behandeld per week, welk gewicht ze hebben binnen de gehele leerstof en wat de belangrijkste zaken zijn die studenten erover moeten onhouden / van moeten leren.
 
 - Welke oefeningen de studenten doen in de online omgeving en welke leeruitkomsten die ondersteunen.
+
+-----
+Geef alles terug als markdown code
+
+
+# Verzamelen module-infomatie per week
+
+Kun je voor week 1 van P2  een uitgebreide briefing genereren met daarin:
+
+- Wat de leeruitkomsten of eindkwalificaties zijn waar de studenten in deze week aan werken.
+- Welke onderwerpen / theorieen / modellen / etc worden behandeld per week
+- Per onderwerp:
+    - welk gewicht ze hebben binnen de gehele leerstof
+    - Wat de belangrijkste zaken zijn die studenten erover moeten onhouden / van moeten leren.
+    - Welke toetsvragen studenten moeten kunnen beantwoorden en een bijbehorend antwoord model
+
+-----
+Geef alles terug als markdown code
+
+
+
