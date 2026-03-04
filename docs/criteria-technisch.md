@@ -46,6 +46,8 @@ De volgende technische aspecten zijn **al gemeten** door de deterministische ana
 | Criterium | Goed | Probleem |
 |-----------|------|----------|
 | **Plausibiliteit** | Aantrekkelijk voor wie stof niet beheerst | Overduidelijk fout of "grapjes" |
+| **Misconceptie-gerichtheid** | Gebaseerd op veelvoorkomende studentmisconcepties of typische redeneerfouten | Willekeurige permutaties of abstracte variaties van het correcte antwoord |
+| **Concreetheid** | Concrete, herkenbare voorbeelden of scenario's | Abstracte, theoretische omschrijvingen waar concrete alternatieven mogelijk zijn |
 | **Duidelijk fout** | Voor competente student herkenbaar als fout | Discutabel of deels juist |
 | **Logische integriteit** | Opties zijn wederzijds uitsluitend — precies één antwoord kan correct zijn | Meerdere opties zijn tegelijk waar, of opties overlappen logisch (zie voorbeeld hieronder) |
 | **Homogeniteit** | Vergelijkbaar qua lengte, stijl, complexiteit. **Uitzondering:** bij korte antwoorden (1-2 woorden) mag de lengte meer variëren — kleine absolute verschillen zijn dan onvermijdelijk en niet problematisch. | Correct antwoord springt eruit |

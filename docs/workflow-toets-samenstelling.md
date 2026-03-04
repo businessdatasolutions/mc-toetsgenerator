@@ -150,7 +150,7 @@ De technische kwaliteit beoordeelt de constructie van de vraag zelf: stam, corre
 
 **⚑ Aanscherpingen uit docentfeedback:**
 
-- **Antwoord niet weggeven in de stam.** De stam mag geen sleutelbegrippen bevatten die direct naar het juiste antwoord leiden. Voorbeeld: als de vraag gaat over "gedeelde waarden" in het 7S-model, noem die term dan niet in de stam — laat de student het zelf identificeren.
+- **Antwoord niet weggeven in de stam.** De stam mag geen sleutelbegrippen bevatten die direct naar het juiste antwoord leiden — ook geen synoniemen, vertalingen of parafrases. Voorbeeld 1: als de vraag gaat over "gedeelde waarden" in het 7S-model, noem die term dan niet in de stam. Voorbeeld 2: vraag niet naar "zwakheden" als het antwoord "interne verbeterpunten" is — gebruik dan "de W uit de SWOT-analyse" zodat de student zelf moet weten waarvoor de letter staat.
 - **Beknopte zinnen.** Houd zinnen in de stam beknopt (max ~25 woorden per zin). Splits lange scenario's op in meerdere korte zinnen. Lange, complexe zinnen maken de vraag moeilijk leesbaar zonder de moeilijkheidsgraad inhoudelijk te verhogen.
 - **Gebruik vaktermen.** Gebruik standaard vaktermen (bijv. "organogram", "machinebureaucratie") in plaats van omslachtige omschrijvingen. Omslachtige beschrijvingen maken de vraag gekunsteld en onnodig lang.
 
@@ -190,6 +190,8 @@ Als D correct is, zijn A en B automatisch ook waar. **Oplossing:** A en B hadden
 - **Specifiek genoeg.** Afleiders mogen niet te breed of vaag zijn — ze moeten concreet genoeg zijn om als serieus alternatief te fungeren.
 - **Geen triviale opties.** Vermijd absurde of onzinnige antwoorden die niemand serieus zou overwegen.
 - **Homogeen in lengte en stijl.** Afleiders moeten qua woordenaantal (±20%) en taalstijl vergelijkbaar zijn met het correcte antwoord.
+- **⚑ Misconceptie-gerichtheid.** Elke afleider vertegenwoordigt een specifieke, veelvoorkomende studentmisconceptie of typische redeneerfout — niet een willekeurige permutatie of abstracte variatie van het correcte antwoord. Voorbeeld: bij een vraag over het primaire proces van een accountantskantoor, gebruik concrete processen die studenten verwarren met het primaire proces (zoals facturering of training), niet abstracte omschrijvingen van input/output-rollen.
+- **⚑ Concreetheid.** Antwoordopties zijn bij voorkeur concrete, herkenbare voorbeelden of scenario's in plaats van abstracte, theoretische omschrijvingen. Concrete opties testen of de student het concept kan herkennen in de praktijk.
 
 #### Deterministische checks (al automatisch gemeten)
 
@@ -527,6 +529,8 @@ Kwaliteitseisen afleiders (zie §2.4):
 - Elke afleider moet plausibel klinken voor een student die de stof oppervlakkig kent maar het concept niet diep begrijpt
 - Afleiders mogen NIET discutabel of gedeeltelijk correct zijn — ze moeten eenduidig onjuist zijn
 - Afleiders mogen niet op basis van algemene kennis (zonder vakkennis) al uitgesloten kunnen worden
+- Elke afleider vertegenwoordigt een specifieke studentmisconceptie of typische redeneerfout — geen willekeurige permutaties of abstracte variaties
+- Gebruik bij voorkeur concrete voorbeelden of scenario's als antwoordopties, geen abstracte theoretische omschrijvingen
 ```
 
 **Tool-schema output:**

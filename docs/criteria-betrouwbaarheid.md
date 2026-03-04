@@ -14,6 +14,8 @@ Kan de vraag onderscheid maken tussen studenten die de stof beheersen en student
 - **Laag**: Iedereen kan correct antwoorden (te makkelijk) of niemand (te moeilijk)
 - **Geen**: Vraag test iets anders dan kennis (bijv. leesvaardigheid, gokkans)
 
+**Domeinkennis vereist**: De vraag kan niet correct beantwoord worden op basis van woordherkenning, algemene kennis of logisch redeneren alleen. Het correcte antwoord vereist specifieke vakkennis. Als de stam synoniemen, vertalingen of parafrases van het correcte antwoord bevat, kan de student het antwoord afleiden zonder het concept te beheersen.
+
 ### Ambiguïteit
 Zijn er meerdere verdedigbare antwoorden mogelijk?
 
