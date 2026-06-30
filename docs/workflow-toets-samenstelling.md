@@ -238,6 +238,33 @@ Focus op deze patronen die alleen door AI beoordeeld kunnen worden:
 
 ---
 
+### 2.5 ⚑ Toetssetniveau: antwoordlekkage tussen vragen
+
+De voorgaande dimensies (§2.2–§2.4) beoordelen elke vraag **op zichzelf**. Een toetsset heeft echter een extra eis die alleen op **setniveau** zichtbaar is: geen vraag mag het antwoord op een andere vraag weggeven.
+
+**Regel:** Geen enkel onderdeel van een vraag — stam, correct antwoord of afleider — mag het correcte antwoord op een andere vraag in dezelfde set onthullen.
+
+#### Twee faalpatronen
+
+1. **Antwoordlekkage.** Een naam, feit of sleutelterm uit het correcte antwoord van vraag X komt terug in de stam of de afleiders van vraag Y (of omgekeerd). Een student kan vraag X dan beantwoorden door vraag Y te lezen, zonder de stof te beheersen. Dit verlaagt het discriminerend vermogen van de hele set.
+2. **Overlappende correcte antwoorden.** Twee vragen hebben inhoudelijk sterk overlappende correcte antwoorden en toetsen daardoor feitelijk hetzelfde, terwijl ze elkaar bovendien bevestigen.
+
+#### Verschil met "geen onderwerpdubbeling" (§2.2)
+
+§2.2 verbiedt dat twee vragen *hetzelfde concept* toetsen. Deze regel gaat verder: ook vragen over **verschillende** concepten mogen elkaars antwoord niet verklappen via gedeelde namen, feiten of sleuteltermen. Een set kan dus voldoen aan §2.2 en toch op §2.5 falen.
+
+#### Verwacht gedrag in de orchestratie
+
+De generatie/orchestratie moet vragen **onderling** controleren op antwoordlekkage en overlap voordat de set wordt vastgesteld. Bij detectie wordt de betreffende vraag hergenereerd of gemarkeerd voor review — geen auto-fix (zie human-in-the-loop). De concrete validatiestap staat in §4.8.
+
+#### Output format
+
+- `set_lekkage_detected`: True / False
+- `set_lekkage_paren`: lijst van `(vraag_id_x, vraag_id_y, type, bewijs)` — `type` ∈ {`naam`, `feit`, `sleutelterm`, `overlap_antwoord`}
+- `set_toelichting`: korte motivatie per gedetecteerd paar
+
+---
+
 ## 3. Voorbeelden
 
 ### 3.1 Slecht opgestelde MC-vragen
@@ -327,6 +354,36 @@ Focus op deze patronen die alleen door AI beoordeeld kunnen worden:
 
 ---
 
+#### Voorbeeld 6 — Antwoordlekkage tussen twee vragen in dezelfde set
+
+Dit is geen probleem van één vraag, maar van de **combinatie** van twee vragen in dezelfde toetsset.
+
+**Vraag 1 — [mc · Begrijpen]**
+Aan wie wordt de formele introductie van het operating model in de bedrijfskundige managementliteratuur toegeschreven, en wat was de aanleiding?
+
+| Optie | Antwoord |
+|-------|----------|
+| A | Aan Peter Weill, die het concept introduceerde als reactie op de wereldwijde financiële crisis van 2008. ✗ |
+| B | Aan **Jeanne W. Ross**, die betoogde dat organisaties een expliciet operating model nodig hadden om maximale waarde uit IT-investeringen te halen. ✓ |
+| C | Aan David C. Robertson, die het operating model ontwikkelde als instrument voor processtandaardisatie binnen de overheid. ✗ |
+| D | Aan het MIT, dat het concept introduceerde om juridische geschillen over octrooien efficiënter te beslechten. ✗ |
+
+**Vraag 2 — [mc · Analyseren]**
+**Jeanne W. Ross** introduceerde het operating model in de managementliteratuur met een specifiek argument. Welke conclusie kan op basis van de brontekst worden getrokken over de reden waarom organisaties in de vroege jaren 2000 behoefte hadden aan een expliciet operating model?
+
+| Optie | Antwoord |
+|-------|----------|
+| A | Organisaties hadden een operating model nodig om te voldoen aan nieuwe internationale regelgeving na de financiële crisis van 2008, zoals Basel III. ✗ |
+| B | Organisaties hadden een operating model nodig omdat traditionele disciplines zoals HRM en financieel management onvoldoende samenhang met de bedrijfsstrategie vertoonden. ✗ |
+| C | Organisaties hadden een operating model nodig om **maximale strategische waarde uit grootschalige IT-investeringen** te halen, door processtandaardisatie en data-integratie expliciet te definiëren. ✓ |
+| D | Organisaties hadden een operating model nodig om de kloof tussen huidig en gewenst bedrijfsmodel te visualiseren via statische stroomdiagrammen. ✗ |
+
+**Analyse:** De stam van vraag 2 noemt expliciet "Jeanne W. Ross" — precies het correcte antwoord (B) op vraag 1. Een student die vraag 2 leest, kent daarmee het antwoord op vraag 1 zonder de stof te beheersen. Bovendien overlappen de correcte antwoorden inhoudelijk sterk: beide draaien om "maximale waarde uit IT-investeringen". De vragen toetsen los van elkaar prima, maar de set lekt. *(Schendt §2.5 Toetssetniveau: antwoordlekkage — type `naam` + `overlap_antwoord`)*
+
+**Oplossing:** Herformuleer de stam van vraag 2 zodat de naam niet voorkomt (bijv. "De bedenker van het operating model betoogde…") en scherp de correcte antwoorden aan zodat ze elk een ander aspect toetsen (herkomst/aanleiding bij vraag 1, onderliggende reden/mechanisme bij vraag 2). Detecteer dit automatisch via de cross-vraag validatie in §4.8.
+
+---
+
 ### 3.2 Goed opgestelde MC-vragen
 
 #### Voorbeeld 1 — Plausibele afleiders uit zelfde raamwerk
@@ -401,6 +458,9 @@ Stap 4 – Converteer stellingvragen naar reguliere MC
     │
     ▼
 Stap 5 – Genereer afleiders (Claude API)
+    │
+    ▼
+Stap 6 – Cross-vraag validatie (antwoordlekkage & overlap)
     │
     ▼
 Toets-CSV klaar voor export
@@ -640,7 +700,99 @@ assert len({row[f'antwoord_{x}'] for x in 'abcd'}) == 4
 
 ---
 
-### 4.8 Eindresultaat
+### 4.8 Stap 6 – Cross-vraag validatie (antwoordlekkage & overlap)
+
+Tot en met Stap 5 wordt elke vraag los gegenereerd en gecontroleerd. Deze stap controleert de **set als geheel** op antwoordlekkage en overlappende correcte antwoorden (zie §2.5) vóórdat de toets wordt vastgesteld.
+
+**Werkwijze:** een twee-laags aanpak die de architectuur van het platform volgt — eerst een goedkope deterministische voorfilter, dan een LLM-oordeel op de verdachte paren.
+
+#### Laag 1 — Deterministische voorfilter
+
+Vergelijk elk vraagpaar (X, Y) en markeer kandidaten voor de LLM-check:
+
+```python
+import itertools, re
+
+def sleuteltermen(tekst):
+    # Eigennamen (hoofdletterwoorden) + inhoudswoorden > 4 tekens
+    namen = set(re.findall(r'\b[A-Z][a-zA-Z.]+(?:\s[A-Z][a-zA-Z.]+)*\b', tekst))
+    woorden = {w.lower() for w in re.findall(r'\b\w{5,}\b', tekst)}
+    return namen, woorden
+
+verdacht = []
+for x, y in itertools.combinations(vragen, 2):
+    namen_x, _ = sleuteltermen(x['correct_antwoord'])
+    # Komt een naam uit het correcte antwoord van X terug in de stam/afleiders van Y?
+    context_y = ' '.join([y['stam']] + [y[f'antwoord_{c}'] for c in 'abcd'
+                                        if y[f'antwoord_{c}'] != y['correct_antwoord']])
+    if namen_x & set(re.findall(r'\b[A-Z][a-zA-Z.]+(?:\s[A-Z][a-zA-Z.]+)*\b', context_y)):
+        verdacht.append((x['vraag_id'], y['vraag_id'], 'naam'))
+    # Sterke woordoverlap tussen de correcte antwoorden (Jaccard)
+    _, w_x = sleuteltermen(x['correct_antwoord'])
+    _, w_y = sleuteltermen(y['correct_antwoord'])
+    if w_x and w_y and len(w_x & w_y) / len(w_x | w_y) > 0.4:
+        verdacht.append((x['vraag_id'], y['vraag_id'], 'overlap_antwoord'))
+```
+
+De voorfilter is bewust ruim (veel kandidaten, weinig gemiste gevallen). Synoniemen, parafrases en semantische overlap ontsnappen aan deze laag — die vangt laag 2 op.
+
+#### Laag 2 — LLM-oordeel op verdachte paren
+
+**Model:** `claude-sonnet-4-5-20250929`
+**Temperature:** `0.0` (validatie, reproduceerbaar)
+
+**Kern van de user-prompt per verdacht paar:**
+
+```
+Beoordeel of deze twee MC-vragen uit dezelfde toetsset elkaar verstoren.
+
+VRAAG X:
+Stam: [x.stam]
+Correct antwoord: [x.correct_antwoord]
+Afleiders: [x afleiders]
+
+VRAAG Y:
+Stam: [y.stam]
+Correct antwoord: [y.correct_antwoord]
+Afleiders: [y afleiders]
+
+Controleer (zie §2.5):
+1. Antwoordlekkage — onthult een naam, feit of sleutelterm in de stam of
+   afleiders van de ene vraag het correcte antwoord op de andere vraag?
+   Let ook op synoniemen, vertalingen en parafrases.
+2. Overlappende correcte antwoorden — toetsen de twee correcte antwoorden
+   inhoudelijk hetzelfde?
+
+Beoordeel alleen lekkage/overlap, niet de kwaliteit van de losse vragen.
+```
+
+**Tool-schema output:**
+
+```json
+{
+  "lekkage": "boolean",
+  "type": "naam|feit|sleutelterm|overlap_antwoord|geen",
+  "bewijs": "string",
+  "advies": "hergenereren|markeren_voor_review|geen_actie"
+}
+```
+
+#### Afhandeling bij detectie
+
+Conform de human-in-the-loop-conventie is er **geen auto-fix**:
+
+- `hergenereren`: genereer de jongste vraag van het paar opnieuw (Stap 3–5) met de instructie de gelekte naam/term te vermijden, en valideer de set opnieuw.
+- `markeren_voor_review`: zet een vlag in de kolom `set_review_nodig` met de toelichting uit `bewijs`, zodat de toetsontwerper de keuze maakt.
+
+**Script:** `temp/validate_cross_question.py`
+
+**Controle:**
+- Iteratie stopt wanneer een volledige validatieronde geen lekkage meer detecteert (of bij het bereiken van een maximaal aantal hergeneratie-rondes — log resterende gemarkeerde paren).
+- Geen vraag-id komt in meer dan één onopgelost lekkage-paar voor.
+
+---
+
+### 4.9 Eindresultaat
 
 Een CSV met de volgende gevulde kolommen per vraag:
 
@@ -657,13 +809,14 @@ Een CSV met de volgende gevulde kolommen per vraag:
 
 ---
 
-### 4.9 Scripts overzicht
+### 4.10 Scripts overzicht
 
 | Script | Doel |
 |--------|------|
 | `temp/generate_new_questions.py` | Stap 3: genereer nieuwe vraagvarianten |
 | `temp/convert_stelling_to_mc.py` | Stap 4: stellingvragen → reguliere MC |
 | `temp/generate_distractors.py` | Stap 5: afleiders genereren |
+| `temp/validate_cross_question.py` | Stap 6: cross-vraag validatie (antwoordlekkage & overlap) |
 
 Voer elk script uit vanuit de `temp/` map:
 
@@ -673,4 +826,5 @@ export $(cat ../.env.local | xargs)
 python3 generate_new_questions.py
 python3 convert_stelling_to_mc.py
 python3 generate_distractors.py
+python3 validate_cross_question.py
 ```
